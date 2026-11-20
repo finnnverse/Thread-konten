@@ -4,6 +4,7 @@
 // field recomputed every frame from story.ts floodH, foam in vertex colours), the court, the explanation vat, the
 // buffet table, the iron tank of the aftermath, and the cast. update(id, f, camera) poses everything (pure in id + f).
 import * as THREE from "three";
+import { getInputProps } from "remotion";
 import { Batch, boxGeo, V, lam, Kit, Ray, house, prop, setSight, quad, tri } from "./build";
 import { rep, ctex, cobbleHD, grassHD, stoneHD, roofHD, brick, cloudHD, rng } from "./paint";
 import { Pen } from "./toon";
@@ -225,7 +226,8 @@ export class World {
     for (const m of [this.sunDisc, this.sunHalo]) { m.frustumCulled = false; m.layers.set(NOINK); R.add(m); }
     this.hemi = new THREE.HemisphereLight("#cfe6ff", "#6c5c8c", 1.1);
     this.sun = new THREE.DirectionalLight("#fff0d6", 2.6);
-    this.sun.castShadow = true; this.sun.shadow.mapSize.set(4096, 4096);
+    this.sun.castShadow = true;
+    { const sz = (getInputProps() as { post?: { shadow?: number } }).post?.shadow ?? 4096; this.sun.shadow.mapSize.set(sz, sz); }
     R.add(this.hemi, this.sun, this.sun.target);
     this.cloudMaps = { day: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.day.cloud)), golden: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.golden.cloud)) };
     for (let i = 0; i < 11; i++) {

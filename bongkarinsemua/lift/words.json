@@ -1,0 +1,826 @@
+{
+ "method": "tts-dtw",
+ "duration": 66.64,
+ "words": [
+  {
+   "text": "Setiap",
+   "start": 0.17,
+   "end": 0.53
+  },
+  {
+   "text": "naik",
+   "start": 0.53,
+   "end": 0.795
+  },
+  {
+   "text": "lift,",
+   "start": 0.795,
+   "end": 1.0
+  },
+  {
+   "text": "kamu",
+   "start": 1.13,
+   "end": 1.33
+  },
+  {
+   "text": "sebenarnya",
+   "start": 1.33,
+   "end": 1.89
+  },
+  {
+   "text": "lagi",
+   "start": 1.89,
+   "end": 2.175
+  },
+  {
+   "text": "digantung",
+   "start": 2.175,
+   "end": 2.78
+  },
+  {
+   "text": "di",
+   "start": 2.78,
+   "end": 2.9
+  },
+  {
+   "text": "atas",
+   "start": 2.9,
+   "end": 3.14
+  },
+  {
+   "text": "lubang",
+   "start": 3.14,
+   "end": 3.56
+  },
+  {
+   "text": "puluhan",
+   "start": 3.56,
+   "end": 3.95
+  },
+  {
+   "text": "meter.",
+   "start": 3.95,
+   "end": 4.3
+  },
+  {
+   "text": "Tapi",
+   "start": 4.85,
+   "end": 5.04
+  },
+  {
+   "text": "lift",
+   "start": 5.04,
+   "end": 5.18
+  },
+  {
+   "text": "itu",
+   "start": 5.18,
+   "end": 5.41
+  },
+  {
+   "text": "hampir",
+   "start": 5.41,
+   "end": 5.87
+  },
+  {
+   "text": "mustahil",
+   "start": 5.87,
+   "end": 6.23
+  },
+  {
+   "text": "jatuh.",
+   "start": 6.23,
+   "end": 6.54
+  },
+  {
+   "text": "Hari",
+   "start": 7.04,
+   "end": 7.25
+  },
+  {
+   "text": "ini",
+   "start": 7.25,
+   "end": 7.46
+  },
+  {
+   "text": "kita",
+   "start": 7.46,
+   "end": 7.71
+  },
+  {
+   "text": "bongkar",
+   "start": 7.71,
+   "end": 8.11
+  },
+  {
+   "text": "kenapa.",
+   "start": 8.11,
+   "end": 8.44
+  },
+  {
+   "text": "Rahasia",
+   "start": 9.14,
+   "end": 9.48
+  },
+  {
+   "text": "pertama:",
+   "start": 9.48,
+   "end": 9.82
+  },
+  {
+   "text": "motornya",
+   "start": 10.28,
+   "end": 10.88
+  },
+  {
+   "text": "ternyata",
+   "start": 11.02,
+   "end": 11.55
+  },
+  {
+   "text": "nggak",
+   "start": 11.55,
+   "end": 11.81
+  },
+  {
+   "text": "ngangkat",
+   "start": 11.81,
+   "end": 12.03
+  },
+  {
+   "text": "beban",
+   "start": 12.03,
+   "end": 12.32
+  },
+  {
+   "text": "sendirian.",
+   "start": 12.32,
+   "end": 12.81
+  },
+  {
+   "text": "Di",
+   "start": 13.27,
+   "end": 13.32
+  },
+  {
+   "text": "ujung",
+   "start": 13.27,
+   "end": 13.55
+  },
+  {
+   "text": "kabel",
+   "start": 13.55,
+   "end": 13.9
+  },
+  {
+   "text": "lain",
+   "start": 13.9,
+   "end": 14.04
+  },
+  {
+   "text": "ada",
+   "start": 14.04,
+   "end": 14.3
+  },
+  {
+   "text": "pemberat,",
+   "start": 14.3,
+   "end": 14.87
+  },
+  {
+   "text": "namanya",
+   "start": 15.19,
+   "end": 15.6
+  },
+  {
+   "text": "counterweight.",
+   "start": 15.6,
+   "end": 16.2
+  },
+  {
+   "text": "Beratnya",
+   "start": 16.8,
+   "end": 17.1
+  },
+  {
+   "text": "setara",
+   "start": 17.1,
+   "end": 17.33
+  },
+  {
+   "text": "kabin",
+   "start": 17.33,
+   "end": 17.59
+  },
+  {
+   "text": "kosong,",
+   "start": 17.59,
+   "end": 18.04
+  },
+  {
+   "text": "plus",
+   "start": 18.23,
+   "end": 18.43
+  },
+  {
+   "text": "kira-kira",
+   "start": 18.43,
+   "end": 18.86
+  },
+  {
+   "text": "setengah",
+   "start": 18.86,
+   "end": 19.32
+  },
+  {
+   "text": "muatan.",
+   "start": 19.32,
+   "end": 19.64
+  },
+  {
+   "text": "Jadi",
+   "start": 20.11,
+   "end": 20.43
+  },
+  {
+   "text": "kayak",
+   "start": 20.43,
+   "end": 20.84
+  },
+  {
+   "text": "jungkat-jungkit.",
+   "start": 20.84,
+   "end": 21.43
+  },
+  {
+   "text": "Motornya",
+   "start": 21.77,
+   "end": 22.14
+  },
+  {
+   "text": "cuma",
+   "start": 22.14,
+   "end": 22.43
+  },
+  {
+   "text": "dorong",
+   "start": 22.43,
+   "end": 22.78
+  },
+  {
+   "text": "sedikit.",
+   "start": 22.78,
+   "end": 22.89
+  },
+  {
+   "text": "Rahasia",
+   "start": 23.55,
+   "end": 23.9
+  },
+  {
+   "text": "kedua:",
+   "start": 23.9,
+   "end": 24.21
+  },
+  {
+   "text": "lift",
+   "start": 24.65,
+   "end": 24.93
+  },
+  {
+   "text": "digantung",
+   "start": 24.93,
+   "end": 25.44
+  },
+  {
+   "text": "beberapa",
+   "start": 25.44,
+   "end": 25.79
+  },
+  {
+   "text": "kabel",
+   "start": 25.79,
+   "end": 26.02
+  },
+  {
+   "text": "baja",
+   "start": 26.02,
+   "end": 26.26
+  },
+  {
+   "text": "sekaligus,",
+   "start": 26.26,
+   "end": 26.81
+  },
+  {
+   "text": "dan",
+   "start": 27.15,
+   "end": 27.32
+  },
+  {
+   "text": "kekuatannya",
+   "start": 27.32,
+   "end": 27.99
+  },
+  {
+   "text": "minimal",
+   "start": 27.99,
+   "end": 28.46
+  },
+  {
+   "text": "lima",
+   "start": 28.46,
+   "end": 28.76
+  },
+  {
+   "text": "kali",
+   "start": 28.76,
+   "end": 28.98
+  },
+  {
+   "text": "beban",
+   "start": 28.98,
+   "end": 29.3
+  },
+  {
+   "text": "maksimal.",
+   "start": 29.3,
+   "end": 29.77
+  },
+  {
+   "text": "Tapi",
+   "start": 30.45,
+   "end": 30.75
+  },
+  {
+   "text": "gimana",
+   "start": 30.75,
+   "end": 31.13
+  },
+  {
+   "text": "kalau",
+   "start": 31.13,
+   "end": 31.34
+  },
+  {
+   "text": "semua",
+   "start": 31.34,
+   "end": 31.62
+  },
+  {
+   "text": "kabelnya",
+   "start": 31.62,
+   "end": 32.0
+  },
+  {
+   "text": "putus?",
+   "start": 32.0,
+   "end": 32.35
+  },
+  {
+   "text": "Nah,",
+   "start": 32.85,
+   "end": 33.18
+  },
+  {
+   "text": "ini",
+   "start": 33.18,
+   "end": 33.35
+  },
+  {
+   "text": "bagian",
+   "start": 33.35,
+   "end": 33.66
+  },
+  {
+   "text": "paling",
+   "start": 33.66,
+   "end": 33.96
+  },
+  {
+   "text": "keren.",
+   "start": 33.96,
+   "end": 34.16
+  },
+  {
+   "text": "Ada",
+   "start": 34.6,
+   "end": 34.83
+  },
+  {
+   "text": "alat",
+   "start": 34.83,
+   "end": 35.08
+  },
+  {
+   "text": "namanya",
+   "start": 35.08,
+   "end": 35.74
+  },
+  {
+   "text": "governor",
+   "start": 35.74,
+   "end": 36.19
+  },
+  {
+   "text": "yang",
+   "start": 36.19,
+   "end": 36.4
+  },
+  {
+   "text": "terus",
+   "start": 36.4,
+   "end": 36.67
+  },
+  {
+   "text": "ngawasin",
+   "start": 36.67,
+   "end": 37.07
+  },
+  {
+   "text": "kecepatan.",
+   "start": 37.07,
+   "end": 37.54
+  },
+  {
+   "text": "Turun",
+   "start": 38.11,
+   "end": 38.26
+  },
+  {
+   "text": "kekencangan",
+   "start": 38.26,
+   "end": 38.81
+  },
+  {
+   "text": "sedikit",
+   "start": 38.81,
+   "end": 39.07
+  },
+  {
+   "text": "aja?",
+   "start": 39.07,
+   "end": 39.3
+  },
+  {
+   "text": "Rem",
+   "start": 39.67,
+   "end": 39.95
+  },
+  {
+   "text": "baja",
+   "start": 39.95,
+   "end": 40.27
+  },
+  {
+   "text": "langsung",
+   "start": 40.27,
+   "end": 40.66
+  },
+  {
+   "text": "menjepit",
+   "start": 40.66,
+   "end": 41.01
+  },
+  {
+   "text": "rel.",
+   "start": 41.01,
+   "end": 41.27
+  },
+  {
+   "text": "Dan",
+   "start": 41.69,
+   "end": 41.81
+  },
+  {
+   "text": "di",
+   "start": 41.81,
+   "end": 41.91
+  },
+  {
+   "text": "dasar",
+   "start": 41.91,
+   "end": 42.2
+  },
+  {
+   "text": "lubang,",
+   "start": 42.2,
+   "end": 42.47
+  },
+  {
+   "text": "masih",
+   "start": 42.64,
+   "end": 42.92
+  },
+  {
+   "text": "ada",
+   "start": 42.92,
+   "end": 43.11
+  },
+  {
+   "text": "bantalan",
+   "start": 43.11,
+   "end": 43.55
+  },
+  {
+   "text": "pegas",
+   "start": 43.55,
+   "end": 43.93
+  },
+  {
+   "text": "buat",
+   "start": 43.93,
+   "end": 44.2
+  },
+  {
+   "text": "jaga-jaga.",
+   "start": 44.2,
+   "end": 44.6
+  },
+  {
+   "text": "Tahun",
+   "start": 45.32,
+   "end": 45.55
+  },
+  {
+   "text": "delapan",
+   "start": 45.55,
+   "end": 45.9
+  },
+  {
+   "text": "belas",
+   "start": 45.9,
+   "end": 46.08
+  },
+  {
+   "text": "lima",
+   "start": 46.08,
+   "end": 46.24
+  },
+  {
+   "text": "puluh",
+   "start": 46.24,
+   "end": 46.41
+  },
+  {
+   "text": "empat,",
+   "start": 46.41,
+   "end": 46.64
+  },
+  {
+   "text": "Elisha",
+   "start": 46.91,
+   "end": 47.35
+  },
+  {
+   "text": "Otis",
+   "start": 47.35,
+   "end": 47.66
+  },
+  {
+   "text": "naik",
+   "start": 47.66,
+   "end": 47.97
+  },
+  {
+   "text": "lift",
+   "start": 47.97,
+   "end": 48.11
+  },
+  {
+   "text": "di",
+   "start": 48.11,
+   "end": 48.18
+  },
+  {
+   "text": "depan",
+   "start": 48.18,
+   "end": 48.5
+  },
+  {
+   "text": "penonton.",
+   "start": 48.5,
+   "end": 48.87
+  },
+  {
+   "text": "Talinya",
+   "start": 49.25,
+   "end": 49.5
+  },
+  {
+   "text": "dipotong.",
+   "start": 49.5,
+   "end": 49.93
+  },
+  {
+   "text": "Dan",
+   "start": 50.24,
+   "end": 50.43
+  },
+  {
+   "text": "dia",
+   "start": 50.43,
+   "end": 50.7
+  },
+  {
+   "text": "selamat.",
+   "start": 50.7,
+   "end": 51.06
+  },
+  {
+   "text": "Kasus",
+   "start": 51.7,
+   "end": 52.12
+  },
+  {
+   "text": "paling",
+   "start": 52.12,
+   "end": 52.36
+  },
+  {
+   "text": "gila?",
+   "start": 52.36,
+   "end": 52.6
+  },
+  {
+   "text": "Tahun",
+   "start": 52.97,
+   "end": 53.13
+  },
+  {
+   "text": "empat",
+   "start": 53.13,
+   "end": 53.43
+  },
+  {
+   "text": "lima,",
+   "start": 53.43,
+   "end": 53.67
+  },
+  {
+   "text": "pesawat",
+   "start": 53.97,
+   "end": 54.27
+  },
+  {
+   "text": "bomber",
+   "start": 54.27,
+   "end": 54.65
+  },
+  {
+   "text": "nabrak",
+   "start": 54.65,
+   "end": 55.08
+  },
+  {
+   "text": "Empire",
+   "start": 55.08,
+   "end": 55.37
+  },
+  {
+   "text": "State",
+   "start": 55.37,
+   "end": 55.67
+  },
+  {
+   "text": "Building.",
+   "start": 55.67,
+   "end": 56.0
+  },
+  {
+   "text": "Liftnya",
+   "start": 56.37,
+   "end": 56.76
+  },
+  {
+   "text": "jatuh",
+   "start": 56.76,
+   "end": 57.19
+  },
+  {
+   "text": "tujuh",
+   "start": 57.19,
+   "end": 57.45
+  },
+  {
+   "text": "puluh",
+   "start": 57.45,
+   "end": 57.56
+  },
+  {
+   "text": "lima",
+   "start": 57.56,
+   "end": 57.75
+  },
+  {
+   "text": "lantai,",
+   "start": 57.75,
+   "end": 58.1
+  },
+  {
+   "text": "dan",
+   "start": 58.44,
+   "end": 58.49
+  },
+  {
+   "text": "operatornya",
+   "start": 58.44,
+   "end": 59.25
+  },
+  {
+   "text": "tetap",
+   "start": 59.42,
+   "end": 59.73
+  },
+  {
+   "text": "selamat.",
+   "start": 59.73,
+   "end": 60.12
+  },
+  {
+   "text": "Selamat,",
+   "start": 60.88,
+   "end": 61.2
+  },
+  {
+   "text": "sekarang",
+   "start": 61.4,
+   "end": 61.69
+  },
+  {
+   "text": "kamu",
+   "start": 61.69,
+   "end": 61.9
+  },
+  {
+   "text": "lebih",
+   "start": 61.9,
+   "end": 62.12
+  },
+  {
+   "text": "paham",
+   "start": 62.12,
+   "end": 62.44
+  },
+  {
+   "text": "soal",
+   "start": 62.44,
+   "end": 62.7
+  },
+  {
+   "text": "lift",
+   "start": 62.7,
+   "end": 62.83
+  },
+  {
+   "text": "daripada",
+   "start": 62.83,
+   "end": 63.25
+  },
+  {
+   "text": "kebanyakan",
+   "start": 63.25,
+   "end": 63.79
+  },
+  {
+   "text": "orang.",
+   "start": 63.79,
+   "end": 64.09
+  },
+  {
+   "text": "Jujur,",
+   "start": 64.62,
+   "end": 64.94
+  },
+  {
+   "text": "kamu",
+   "start": 65.22,
+   "end": 65.39
+  },
+  {
+   "text": "masih",
+   "start": 65.39,
+   "end": 65.62
+  },
+  {
+   "text": "takut",
+   "start": 65.62,
+   "end": 65.87
+  },
+  {
+   "text": "naik",
+   "start": 65.87,
+   "end": 66.06
+  },
+  {
+   "text": "lift,",
+   "start": 66.06,
+   "end": 66.33
+  },
+  {
+   "text": "nggak?",
+   "start": 66.34,
+   "end": 66.64
+  }
+ ]
+}

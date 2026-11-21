@@ -57,11 +57,11 @@ const OUTLINE = "#3b2417";
 const PX = 512;
 
 // ---------- materials ----------
-const clay = (color: string | THREE.Color, map?: THREE.Texture, rough = 0.72) =>
+export const clay = (color: string | THREE.Color, map?: THREE.Texture, rough = 0.72) =>
   new THREE.MeshStandardMaterial({ color: map ? "#ffffff" : color, map: map ?? null, roughness: rough, metalness: 0 });
 
 const outlineMats = new Map<number, THREE.MeshBasicMaterial>();
-const outlineMat = (thick: number) => {
+export const outlineMat = (thick: number) => {
   let m = outlineMats.get(thick);
   if (m) return m;
   m = new THREE.MeshBasicMaterial({ color: OUTLINE, side: THREE.BackSide });
@@ -120,10 +120,10 @@ export const patternTex = (p: Pattern) => {
 const patMat = (p: Pattern) => (p.kind === "polos" ? clay(p.base) : clay(p.base, patternTex(p)));
 
 // ---------- mesh helpers ----------
-const rbox = (w: number, h: number, d: number, r = 0.3) => new RoundedBoxGeometry(w, h, d, 5, Math.min(w, h, d) * r);
-const capsule = (r: number, len: number) => new THREE.CapsuleGeometry(r, len, 6, 14);
+export const rbox = (w: number, h: number, d: number, r = 0.3) => new RoundedBoxGeometry(w, h, d, 5, Math.min(w, h, d) * r);
+export const capsule = (r: number, len: number) => new THREE.CapsuleGeometry(r, len, 6, 14);
 
-function part(parent: THREE.Object3D, geo: THREE.BufferGeometry, mat: THREE.Material, pos: [number, number, number] = [0, 0, 0], outline = 0.012) {
+export function part(parent: THREE.Object3D, geo: THREE.BufferGeometry, mat: THREE.Material, pos: [number, number, number] = [0, 0, 0], outline = 0.012) {
   const m = new THREE.Mesh(geo, mat);
   m.position.set(...pos);
   m.castShadow = true;
@@ -137,9 +137,9 @@ function part(parent: THREE.Object3D, geo: THREE.BufferGeometry, mat: THREE.Mate
 }
 
 // ---------- face painting ----------
-const shade = (hex: string, k: number) => { const c = new THREE.Color(hex); c.multiplyScalar(k); return "#" + c.getHexString(); };
+export const shade = (hex: string, k: number) => { const c = new THREE.Color(hex); c.multiplyScalar(k); return "#" + c.getHexString(); };
 
-function drawFace(g: CanvasRenderingContext2D, s: Spec, e: Expr, look: [number, number], blink: boolean) {
+function drawFace(g: CanvasRenderingContext2D, s: Spec, e: Expr, look: [number, number], blink: boolean, talk = 0) {
   g.clearRect(0, 0, PX, PX);
   const ink = "#24150e", lip = "#5b1f16", brow = s.brow ?? s.hairColor;
   const skin = s.skin;
@@ -206,7 +206,13 @@ function drawFace(g: CanvasRenderingContext2D, s: Spec, e: Expr, look: [number, 
   // mouth
   const MY = 352;
   g.strokeStyle = lip; g.fillStyle = lip; g.lineWidth = 12;
-  if (e === "netral" || e === "merem") { g.beginPath(); g.moveTo(226, MY); g.quadraticCurveTo(256, MY + (e === "merem" ? 14 : 6), 286, MY); g.stroke(); }
+  if (talk > 0 && e !== "tawa" && e !== "nangis" && e !== "kaget") {
+    // speaking: open mouth, its corners follow the expression
+    const up = e === "senyum" || e === "merem" ? -10 : e === "sedih" || e === "marah" ? 10 : 0;
+    const w = 34, h = 14 + talk * 22;
+    g.beginPath(); g.moveTo(256 - w, MY + up); g.quadraticCurveTo(256, MY - 10, 256 + w, MY + up); g.quadraticCurveTo(256, MY + h * 1.6, 256 - w, MY + up); g.fill();
+    g.save(); g.clip(); g.fillStyle = "#e0707a"; g.beginPath(); g.ellipse(256, MY + h * 1.3, 24, 12, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  } else if (e === "netral" || e === "merem") { g.beginPath(); g.moveTo(226, MY); g.quadraticCurveTo(256, MY + (e === "merem" ? 14 : 6), 286, MY); g.stroke(); }
   else if (e === "senyum") { g.beginPath(); g.arc(256, MY - 34, 52, Math.PI * 0.2, Math.PI * 0.8); g.stroke(); }
   else if (e === "tawa" || e === "nangis") {
     g.beginPath();
@@ -395,14 +401,15 @@ export class Warga {
     this.pose({});
   }
 
-  setExpr(e: Expr, opt: { blink?: boolean; look?: [number, number] } = {}) {
-    const look = opt.look ?? [0, 0];
-    const key = `${e}|${opt.blink ? 1 : 0}|${look[0].toFixed(1)},${look[1].toFixed(1)}`;
+  setExpr(e: Expr, opt: { blink?: boolean; look?: [number, number]; talk?: number } = {}) {
+    const look: [number, number] = [Math.round((opt.look?.[0] ?? 0) * 2) / 2, Math.round((opt.look?.[1] ?? 0) * 2) / 2];
+    const talk = Math.round((opt.talk ?? 0) * 2) / 2;
+    const key = `${e}|${opt.blink ? 1 : 0}|${look[0]},${look[1]}|${talk}`;
     let t = this.faceTex.get(key);
     if (!t) {
       const c = document.createElement("canvas");
       c.width = c.height = PX;
-      drawFace(c.getContext("2d")!, this.spec, e, look, !!opt.blink);
+      drawFace(c.getContext("2d")!, this.spec, e, look, !!opt.blink, talk);
       t = new THREE.CanvasTexture(c);
       t.colorSpace = THREE.SRGBColorSpace;
       t.anisotropy = 4;

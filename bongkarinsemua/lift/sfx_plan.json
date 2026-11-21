@@ -1,0 +1,80 @@
+[
+ {
+  "role": "boom",
+  "at": 0.0,
+  "src": "hook",
+  "gain": -4
+ },
+ {
+  "role": "whoosh_small",
+  "at": 1.09,
+  "src": "cut->shaft_fall"
+ },
+ {
+  "role": "whoosh_medium",
+  "at": 7.0,
+  "src": "cut->brand"
+ },
+ {
+  "role": "whoosh_medium",
+  "at": 13.23,
+  "src": "cut->counter_reveal"
+ },
+ {
+  "role": "whoosh_small",
+  "at": 20.07,
+  "src": "cut->balance_move"
+ },
+ {
+  "role": "whoosh_medium",
+  "at": 27.11,
+  "src": "cut->cable_close"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 30.41,
+  "src": "cut->cable_cut"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 32.81,
+  "src": "cut->governor_xray"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 38.07,
+  "src": "cut->safety_brake"
+ },
+ {
+  "role": "boom",
+  "at": 39.67,
+  "src": "script",
+  "gain": 0,
+  "explicit": true
+ },
+ {
+  "role": "whoosh_big",
+  "at": 45.28,
+  "src": "cut->otis"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 51.66,
+  "src": "cut->bomber"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 56.33,
+  "src": "cut->fall75"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 60.84,
+  "src": "cut->outro"
+ },
+ {
+  "role": "whoosh_big",
+  "at": 64.58,
+  "src": "cut->outro_q"
+ }
+]

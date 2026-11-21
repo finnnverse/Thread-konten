@@ -17,6 +17,8 @@ Format: video vertikal 1080x1920 (render preview 540x960), 30 fps, **maksimal 60
 - Bahasa VO dan caption: Indonesia (kecuali user minta Inggris).
 
 ## Alur kerja
+**Aturan user: jangan render apa pun (tes, still, demo) sebelum VO masuk.** Urutannya: ide/topik → naskah + catatan rekaman + rencana shot → TUNGGU user mengirim VO → baru bangun story, cek still seperlunya, render final.
+
 1. **Ide**: tawarkan 5 ide cerita (judul hook + inti cerita + twist + tokoh yang dipakai). Cerita yang bagus untuk format ini: satu kampung kompak menolong seseorang diam-diam, salah paham yang ternyata baik, kebiasaan kecil yang ternyata punya alasan menyentuh, anak kecil dan orang tua, kejujuran kecil.
 2. **Script**: maksimal ~145 kata (VO 55–60 detik). Struktur:
    - Hook (0–3 dtk): kalimat penasaran ("Setiap pagi, warung ini selalu ...").

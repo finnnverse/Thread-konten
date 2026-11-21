@@ -43,6 +43,8 @@ export function freezeStatic(root: THREE.Object3D) {
 }
 
 export const ROOM_X = 60; // indoor set origin
+export const DAPUR_X = 80; // kitchen set origin
+export type Light = "pagi" | "subuh" | "malam";
 export const FONT = "Nunito";
 
 const rng = (seed: number) => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
@@ -96,6 +98,9 @@ type HouseOpt = { side: -1 | 1; z: number; w: number; wall: string; trim: string
 export class KampungSet {
   readonly root = new THREE.Group();
   readonly sun: THREE.DirectionalLight;
+  private hemi!: THREE.HemisphereLight; private fill!: THREE.DirectionalLight; private skyMat!: THREE.ShaderMaterial; private fog!: THREE.Fog;
+  private lamps: THREE.PointLight[] = []; private lampGlow: THREE.MeshStandardMaterial[] = [];
+  private light: Light = "pagi";
   private chickens: THREE.Group[] = [];
   private clouds: THREE.Group[] = [];
   readonly spots: Record<string, [number, number]> = {
@@ -106,7 +111,7 @@ export class KampungSet {
   constructor(scene: THREE.Scene) {
     scene.add(this.root);
     // sky dome
-    const sky = new THREE.Mesh(new THREE.SphereGeometry(200, 32, 16), new THREE.ShaderMaterial({
+    const sky = new THREE.Mesh(new THREE.SphereGeometry(200, 32, 16), this.skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, fog: false,
       uniforms: { top: { value: new THREE.Color("#78b4e6") }, hor: { value: new THREE.Color("#f6e6c8") } },
       vertexShader: "varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
@@ -114,16 +119,16 @@ export class KampungSet {
     }));
     sky.userData.dynamic = true;
     this.root.add(sky);
-    scene.fog = new THREE.Fog("#f3e2c4", 35, 120);
+    scene.fog = this.fog = new THREE.Fog("#f3e2c4", 35, 120);
 
-    scene.add(new THREE.HemisphereLight("#fff1d6", "#8f7a5c", 1.25));
+    scene.add(this.hemi = new THREE.HemisphereLight("#fff1d6", "#8f7a5c", 1.25));
     this.sun = new THREE.DirectionalLight("#ffdfae", 2.7);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(2048, 2048);
     this.sun.shadow.bias = -0.0004; this.sun.shadow.normalBias = 0.03; this.sun.shadow.radius = 5;
     Object.assign(this.sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 60 });
     scene.add(this.sun, this.sun.target);
-    const fill = new THREE.DirectionalLight("#cfe0ff", 0.6); fill.position.set(-8, 6, 10); scene.add(fill);
+    const fill = this.fill = new THREE.DirectionalLight("#cfe0ff", 0.6); fill.position.set(-8, 6, 10); scene.add(fill);
     this.setFocus(0, 0);
 
     this.ground();
@@ -142,12 +147,31 @@ export class KampungSet {
     for (const [x, z, a] of [[1.0, -2, 0.6], [-0.4, -3.2, 2.2], [0.8, 3.8, -1]]) this.chicken(x, z, a);
     for (let i = 0; i < 7; i++) this.cloud(-60 + i * 22 + r() * 6, 26 + r() * 10, -70 - r() * 30, 1.6 + r());
     this.room();
+    this.dapur();
     freezeStatic(this.root);
+  }
+
+  /** time-of-day look: pagi (warm day), subuh (cool dawn), malam (night, lamps on) */
+  setLight(l: Light) {
+    this.light = l;
+    const P = {
+      pagi: { hs: "#fff1d6", hg: "#8f7a5c", hi: 1.25, sc: "#ffdfae", si: 2.7, fi: 0.6, top: "#78b4e6", hor: "#f6e6c8", fog: "#f3e2c4", lamp: 0 },
+      subuh: { hs: "#c9d3ef", hg: "#5d5a6a", hi: 1.0, sc: "#ffbf94", si: 1.4, fi: 0.5, top: "#8199d0", hor: "#f2c3a4", fog: "#d8c3bd", lamp: 0.5 },
+      malam: { hs: "#46599a", hg: "#14141d", hi: 0.28, sc: "#a9bcff", si: 0.18, fi: 0.08, top: "#0c1430", hor: "#283058", fog: "#161c38", lamp: 0.55 },
+    }[l];
+    this.hemi.color.set(P.hs); this.hemi.groundColor.set(P.hg); this.hemi.intensity = P.hi;
+    this.sun.color.set(P.sc); this.sun.intensity = P.si; this.fill.intensity = P.fi;
+    (this.skyMat.uniforms.top.value as THREE.Color).set(P.top); (this.skyMat.uniforms.hor.value as THREE.Color).set(P.hor);
+    this.fog.color.set(P.fog);
+    // lamps only exist (in the shader) when lit: unlit point lights still cost every pixel of every material
+    this.lamps.forEach((lp) => { lp.intensity = (lp.userData.base as number) * P.lamp; lp.visible = P.lamp > 0; });
+    this.lampGlow.forEach((m) => (m.emissiveIntensity = 0.2 + 2.2 * P.lamp));
   }
 
   /** move the sun's shadow box to follow the action */
   setFocus(x: number, z: number) {
-    this.sun.position.set(x + 9, 16, z + 11);
+    const low = this.light === "subuh";
+    this.sun.position.set(x + (low ? 14 : 9), low ? 6 : 16, z + 11);
     this.sun.target.position.set(x, 0, z);
     this.sun.target.updateMatrixWorld();
   }
@@ -355,6 +379,63 @@ export class KampungSet {
     part(g, new THREE.PlaneGeometry(0.58, 0.43), clay("#d9c39a"), [-0.6, 2.25, -2.855], 0);
     part(g, new THREE.CylinderGeometry(0.22, 0.22, 0.05, 20), clay("#f4efe4"), [0.4, 2.6, -2.88], 0.006).rotation.x = Math.PI / 2;
     // room light
-    const bulb = new THREE.PointLight("#ffd9a0", 6, 9, 1.6); bulb.position.set(-0.5, 3.0, -0.5); g.add(bulb);
+  }
+
+  /** Mbah Sarni's kitchen at (DAPUR_X, 0, 0). Back wall z = -3.2, left wall x = DX-3.2, right wall x = DX+3.0 with a
+   *  door gap at z -1.05..0.05. Work table (island) centred at (DX, 0.85, -1.5); the cook stands behind it at z ≈ -2.35. */
+  private dapur() {
+    const DX = DAPUR_X, g = new THREE.Group(); g.position.set(DX, 0, 0); this.root.add(g);
+    const tegel = canvasTex(256, 256, (c) => { for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { c.fillStyle = (x + y) % 2 ? "#c7533f" : "#e9d9bd"; c.fillRect(x * 64, y * 64, 64, 64); } });
+    tegel.wrapS = tegel.wrapT = THREE.RepeatWrapping; tegel.repeat.set(4, 4);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshStandardMaterial({ map: tegel, roughness: 0.55 })); fl.rotation.x = -Math.PI / 2; fl.position.set(0, 0.01, -0.5); fl.receiveShadow = true; g.add(fl);
+    const wallM = clay("#f2e3c6", undefined, 0.95), lowM = clay("#9cc9b4");
+    part(g, new THREE.BoxGeometry(6.4, 3.2, 0.2), wallM, [-0.1, 1.6, -3.2], 0);
+    part(g, new THREE.BoxGeometry(6.42, 0.9, 0.22), lowM, [-0.1, 0.45, -3.19], 0);
+    part(g, new THREE.BoxGeometry(0.2, 3.2, 6), wallM, [-3.2, 1.6, -0.3], 0);
+    // right wall with a door gap
+    part(g, new THREE.BoxGeometry(0.2, 3.2, 2.1), wallM, [3.0, 1.6, -2.1], 0);
+    part(g, new THREE.BoxGeometry(0.2, 3.2, 2.7), wallM, [3.0, 1.6, 1.4], 0);
+    part(g, new THREE.BoxGeometry(0.2, 1.0, 1.1), wallM, [3.0, 2.7, -0.5], 0);
+    for (const z of [-1.08, 0.08]) part(g, rbox(0.26, 2.2, 0.08, 0.3), clay("#8b5a32"), [3.0, 1.1, z], 0.008);
+    // window over the back wall
+    this.window(g, 1.7, 1.95, -3.09, "#2f7d6d");
+    // shelf with jars behind the cook
+    const shelfM = clay("#8b5a32", plankTex("#8b5a32"));
+    for (const y of [1.55, 2.15]) part(g, rbox(2.2, 0.06, 0.32, 0.2), shelfM, [-1.2, y, -2.98], 0.008);
+    const jarCols = ["#f2b437", "#e07a2a", "#c9a46a", "#7aa63a", "#f4efe4", "#b5652d"];
+    jarCols.forEach((c, i) => {
+      const x = -2.0 + (i % 3) * 0.75 + (i > 2 ? 0.3 : 0), y = i > 2 ? 2.18 : 1.58;
+      part(g, new THREE.CylinderGeometry(0.11, 0.11, 0.26, 12), new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.1, transparent: true, opacity: 0.4 }), [x, y + 0.13, -2.95], 0.006);
+      part(g, new THREE.CylinderGeometry(0.09, 0.09, 0.16, 10), clay(c), [x, y + 0.09, -2.95], 0);
+      part(g, new THREE.CylinderGeometry(0.12, 0.12, 0.04, 12), clay("#c8302c"), [x, y + 0.28, -2.95], 0.005);
+    });
+    // stove (kompor) + kettle at the left wall
+    part(g, rbox(0.9, 0.85, 0.7, 0.1), clay("#d8d2c4"), [-2.6, 0.43, -2.4], 0.012);
+    part(g, new THREE.CylinderGeometry(0.2, 0.22, 0.26, 16), clay("#9aa0a6", undefined, 0.35), [-2.6, 1.0, -2.4], 0.01);
+    // hanging pans
+    for (let i = 0; i < 3; i++) { const pan = part(g, new THREE.CylinderGeometry(0.16 + i * 0.03, 0.14 + i * 0.03, 0.06, 16), clay("#6a6a66", undefined, 0.4), [-3.06, 1.9 + (i % 2) * 0.1, -1.6 + i * 0.45], 0.008); pan.rotation.z = Math.PI / 2; }
+    // work table (island)
+    const top = clay("#c99a62", plankTex("#c99a62"));
+    part(g, rbox(2.6, 0.08, 0.9, 0.3), top, [0, 0.85, -1.5], 0.012);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) part(g, rbox(0.08, 0.82, 0.08, 0.3), clay("#7a5232"), [sx * 1.2, 0.41, -1.5 + sz * 0.37], 0.008);
+    part(g, rbox(2.4, 0.05, 0.8, 0.3), clay("#a07a4c"), [0, 0.25, -1.5], 0.008);
+    // big pot of jamu + toples gula/kunyit/jahe on the table
+    part(g, new THREE.CylinderGeometry(0.28, 0.24, 0.36, 20), clay("#b8bcc0", undefined, 0.3), [-0.35, 1.07, -1.55], 0.012);
+    const jamu = new THREE.Mesh(new THREE.CircleGeometry(0.26, 24), clay("#e8a92e", undefined, 0.3)); jamu.rotation.x = -Math.PI / 2; jamu.position.set(-0.35, 1.2, -1.55); g.add(jamu);
+    for (const [x, c, lab] of [[-1.05, "#f7f4ee", 0], [-0.8, "#f0a52a", 1], [-1.15, "#d8b27a", 2]] as [number, string, number][]) {
+      const z = lab === 2 ? -1.8 : -1.45;
+      part(g, new THREE.CylinderGeometry(0.12, 0.12, 0.3, 14), new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.1, transparent: true, opacity: 0.4 }), [x, 1.04, z], 0.006);
+      part(g, new THREE.CylinderGeometry(0.1, 0.1, 0.22, 12), clay(c), [x, 1.0, z], 0);
+    }
+    // lamp over the table
+    part(g, new THREE.CylinderGeometry(0.01, 0.01, 0.6, 6), clay("#2a2422"), [0.1, 2.9, -1.5], 0);
+    part(g, new THREE.ConeGeometry(0.26, 0.2, 18, 1, true), clay("#2f7d6d"), [0.1, 2.55, -1.5], 0.008);
+    const glow = new THREE.MeshStandardMaterial({ color: "#fff3c8", emissive: "#ffd27a", emissiveIntensity: 0.2 });
+    this.lampGlow.push(glow);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 10), glow); bulb.position.set(0.1, 2.45, -1.5); bulb.userData.dynamic = true; g.add(bulb);
+    const lp = new THREE.PointLight("#ffcf8a", 0, 7, 1.4); lp.position.set(0.1, 2.3, -1.4); lp.userData.base = 5; g.add(lp); this.lamps.push(lp);
+    const lp2 = new THREE.PointLight("#ffe0b0", 0, 9, 1.2); lp2.position.set(0.5, 2.2, 1.2); lp2.userData.base = 1.5; g.add(lp2); this.lamps.push(lp2);
+    // calendar
+    part(g, rbox(0.5, 0.66, 0.03, 0.1), new THREE.MeshStandardMaterial({ map: signTex("2026", "#ffffff", "#c8302c", 256, 320), roughness: 0.7 }), [0.4, 2.1, -3.08], 0.006);
   }
 }

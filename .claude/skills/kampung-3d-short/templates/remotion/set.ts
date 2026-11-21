@@ -163,7 +163,8 @@ export class KampungSet {
     this.sun.color.set(P.sc); this.sun.intensity = P.si; this.fill.intensity = P.fi;
     (this.skyMat.uniforms.top.value as THREE.Color).set(P.top); (this.skyMat.uniforms.hor.value as THREE.Color).set(P.hor);
     this.fog.color.set(P.fog);
-    this.lamps.forEach((lp) => (lp.intensity = (lp.userData.base as number) * P.lamp));
+    // lamps only exist (in the shader) when lit: unlit point lights still cost every pixel of every material
+    this.lamps.forEach((lp) => { lp.intensity = (lp.userData.base as number) * P.lamp; lp.visible = P.lamp > 0; });
     this.lampGlow.forEach((m) => (m.emissiveIntensity = 0.2 + 2.2 * P.lamp));
   }
 
@@ -378,7 +379,6 @@ export class KampungSet {
     part(g, new THREE.PlaneGeometry(0.58, 0.43), clay("#d9c39a"), [-0.6, 2.25, -2.855], 0);
     part(g, new THREE.CylinderGeometry(0.22, 0.22, 0.05, 20), clay("#f4efe4"), [0.4, 2.6, -2.88], 0.006).rotation.x = Math.PI / 2;
     // room light
-    const bulb = new THREE.PointLight("#ffd9a0", 6, 9, 1.6); bulb.position.set(-0.5, 3.0, -0.5); g.add(bulb);
   }
 
   /** Mbah Sarni's kitchen at (DAPUR_X, 0, 0). Back wall z = -3.2, left wall x = DX-3.2, right wall x = DX+3.0 with a

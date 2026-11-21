@@ -4,11 +4,11 @@ import { Expr, Pose } from "./cast3d";
 
 export type V3 = [number, number, number];
 export type CamKey = { t: number; pos: V3; look: V3; fov?: number };
-export type Shot = { id: string; start: number; end: number; cams: CamKey[]; focus?: [number, number]; fade?: number; shake?: number };
+export type Shot = { id: string; start: number; end: number; cams: CamKey[]; focus?: [number, number]; fade?: number; shake?: number; light?: "pagi" | "subuh" | "malam" };
 
 /** One actor's timeline. Times in seconds. */
 export type Track = {
-  path?: { t: number; at: [number, number] }[]; // walk between points (auto walk cycle + facing)
+  path?: { t: number; at: [number, number]; jump?: boolean }[]; // walk between points (auto walk cycle + facing); jump = appear there at t (shot cut)
   face?: { t: number; yaw: number }[]; // explicit facing when standing (radians, 0 = toward +z)
   lookAt?: { t: number; target: string | [number, number] | null }[]; // turn head toward an actor/point
   expr?: { t: number; e: Expr }[];
@@ -40,6 +40,7 @@ export function sampleTrack(tr: Track, t: number, seed: number, resolve: (id: st
   else for (let i = 0; i < P.length - 1; i++) {
     const a = P[i], b = P[i + 1];
     if (t >= a.t && t < b.t) {
+      if (b.jump) { [x, z] = a.at; break; }
       const k = (t - a.t) / (b.t - a.t);
       const dx = b.at[0] - a.at[0], dz = b.at[1] - a.at[1], len = Math.hypot(dx, dz);
       // constant speed with short accel/decel
@@ -51,7 +52,7 @@ export function sampleTrack(tr: Track, t: number, seed: number, resolve: (id: st
   }
   // distance walked so far (for a continuous walk phase)
   let walked = dist;
-  for (let i = 0; i < P.length - 1 && P[i + 1].t <= t; i++) walked += Math.hypot(P[i + 1].at[0] - P[i].at[0], P[i + 1].at[1] - P[i].at[1]);
+  for (let i = 0; i < P.length - 1 && P[i + 1].t <= t; i++) if (!P[i + 1].jump) walked += Math.hypot(P[i + 1].at[0] - P[i].at[0], P[i + 1].at[1] - P[i].at[1]);
   const fk = stepKey(tr.face, t);
   let yaw = fk.cur ? fk.cur.yaw : 0;
   if (fk.cur && fk.prev) yaw = angLerp(fk.prev.yaw, fk.cur.yaw, ease((t - fk.cur.t) / 0.35));

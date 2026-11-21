@@ -1,15 +1,15 @@
 # Bongkarinsemua — Kenapa lift hampir mustahil jatuh (±60 detik)
-[shaft_down] Setiap naik lift, [shaft_fall] kamu sebenarnya lagi digantung di atas lubang {PULUHAN METER|red|above} puluhan meter.
+[shaft_down] Setiap naik lift, [shaft_fall] kamu sebenarnya lagi digantung di atas lubang puluhan meter.
 [city_tower] Tapi lift itu hampir mustahil jatuh. [brand] Hari ini kita bongkar kenapa.
 [machine_room] Rahasia pertama: motornya ternyata nggak ngangkat beban sendirian.
-[counter_reveal] Di ujung kabel lain ada pemberat, {COUNTERWEIGHT|yellow|above} namanya counterweight.
-[balance] Beratnya setara kabin kosong, {+½ MUATAN|yellow} plus kira-kira setengah muatan.
+[counter_reveal] Di ujung kabel lain ada pemberat, namanya counterweight.
+[balance] Beratnya setara kabin kosong, plus kira-kira setengah muatan.
 [balance_move] Jadi kayak jungkat-jungkit. [motor_push] Motornya cuma dorong sedikit.
-[cables] Rahasia kedua: lift digantung beberapa kabel baja sekaligus, [cable_close] dan kekuatannya {MIN. 5X BEBAN|green} minimal lima kali beban maksimal.
+[cables] Rahasia kedua: lift digantung beberapa kabel baja sekaligus, [cable_close] dan kekuatannya minimal lima kali beban maksimal.
 [cable_cut] Tapi gimana kalau semua kabelnya putus?
-[governor_xray] Nah, ini bagian paling keren. Ada alat namanya {GOVERNOR|cyan|above} governor [gov_wheel] yang terus ngawasin kecepatan.
+[governor_xray] Nah, ini bagian paling keren. Ada alat namanya governor [gov_wheel] yang terus ngawasin kecepatan.
 [safety_brake] Turun kekencangan sedikit aja? {sfx:boom} Rem baja langsung menjepit rel.
-[buffer] Dan di dasar lubang, masih ada {BUFFER|orange|above} bantalan pegas buat jaga-jaga.
-[otis] Tahun {1854|orange|above} delapan belas lima puluh empat, Elisha Otis naik lift di depan penonton. [otis_cut] Talinya dipotong. Dan dia selamat.
-[bomber] Kasus paling gila? Tahun empat lima, [bomber_hit] pesawat bomber nabrak Empire State Building. [fall75] Liftnya jatuh {75 LANTAI|red|above} tujuh puluh lima lantai, [survive] dan operatornya tetap selamat.
+[buffer] Dan di dasar lubang, masih ada bantalan pegas buat jaga-jaga.
+[otis] Tahun delapan belas lima puluh empat, Elisha Otis naik lift di depan penonton. [otis_cut] Talinya dipotong. Dan dia selamat.
+[bomber] Kasus paling gila? Tahun empat lima, [bomber_hit] pesawat bomber nabrak Empire State Building. [fall75] Liftnya jatuh tujuh puluh lima lantai, [survive] dan operatornya tetap selamat.
 [outro] Selamat, sekarang kamu lebih paham soal lift daripada kebanyakan orang. [outro_q] Jujur, kamu masih takut naik lift, nggak?

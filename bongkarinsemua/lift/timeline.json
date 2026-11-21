@@ -1,0 +1,181 @@
+{
+ "duration": 67.34,
+ "handle": "@bongkarinsemua",
+ "shots": [
+  {
+   "scene": "shaft_down",
+   "start": 0.0,
+   "word": 0,
+   "end": 1.09,
+   "words": "Setiap naik lift,"
+  },
+  {
+   "scene": "shaft_fall",
+   "start": 1.09,
+   "word": 3,
+   "end": 4.81,
+   "words": "kamu sebenarnya lagi digantung di atas lubang puluhan meter."
+  },
+  {
+   "scene": "city_tower",
+   "start": 4.81,
+   "word": 12,
+   "end": 7.0,
+   "words": "Tapi lift itu hampir mustahil jatuh."
+  },
+  {
+   "scene": "brand",
+   "start": 7.0,
+   "word": 18,
+   "end": 9.1,
+   "words": "Hari ini kita bongkar kenapa."
+  },
+  {
+   "scene": "machine_room",
+   "start": 9.1,
+   "word": 23,
+   "end": 13.23,
+   "words": "Rahasia pertama: motornya ternyata nggak ngangkat beban sendirian."
+  },
+  {
+   "scene": "counter_reveal",
+   "start": 13.23,
+   "word": 31,
+   "end": 16.76,
+   "words": "Di ujung kabel lain ada pemberat, namanya counterweight."
+  },
+  {
+   "scene": "balance",
+   "start": 16.76,
+   "word": 39,
+   "end": 20.07,
+   "words": "Beratnya setara kabin kosong, plus kira-kira setengah muatan."
+  },
+  {
+   "scene": "balance_move",
+   "start": 20.07,
+   "word": 47,
+   "end": 21.73,
+   "words": "Jadi kayak jungkat-jungkit."
+  },
+  {
+   "scene": "motor_push",
+   "start": 21.73,
+   "word": 50,
+   "end": 23.51,
+   "words": "Motornya cuma dorong sedikit."
+  },
+  {
+   "scene": "cables",
+   "start": 23.51,
+   "word": 54,
+   "end": 27.11,
+   "words": "Rahasia kedua: lift digantung beberapa kabel baja sekaligus,"
+  },
+  {
+   "scene": "cable_close",
+   "start": 27.11,
+   "word": 62,
+   "end": 30.41,
+   "words": "dan kekuatannya minimal lima kali beban maksimal."
+  },
+  {
+   "scene": "cable_cut",
+   "start": 30.41,
+   "word": 69,
+   "end": 32.81,
+   "words": "Tapi gimana kalau semua kabelnya putus?"
+  },
+  {
+   "scene": "governor_xray",
+   "start": 32.81,
+   "word": 75,
+   "end": 36.15,
+   "words": "Nah, ini bagian paling keren. Ada alat namanya governor"
+  },
+  {
+   "scene": "gov_wheel",
+   "start": 36.15,
+   "word": 84,
+   "end": 38.07,
+   "words": "yang terus ngawasin kecepatan."
+  },
+  {
+   "scene": "safety_brake",
+   "start": 38.07,
+   "word": 88,
+   "end": 41.65,
+   "words": "Turun kekencangan sedikit aja? Rem baja langsung menjepit rel."
+  },
+  {
+   "scene": "buffer",
+   "start": 41.65,
+   "word": 97,
+   "end": 45.28,
+   "words": "Dan di dasar lubang, masih ada bantalan pegas buat jaga-jaga."
+  },
+  {
+   "scene": "otis",
+   "start": 45.28,
+   "word": 107,
+   "end": 49.21,
+   "words": "Tahun delapan belas lima puluh empat, Elisha Otis naik lift di depan penonton."
+  },
+  {
+   "scene": "otis_cut",
+   "start": 49.21,
+   "word": 120,
+   "end": 51.66,
+   "words": "Talinya dipotong. Dan dia selamat."
+  },
+  {
+   "scene": "bomber",
+   "start": 51.66,
+   "word": 125,
+   "end": 53.93,
+   "words": "Kasus paling gila? Tahun empat lima,"
+  },
+  {
+   "scene": "bomber_hit",
+   "start": 53.93,
+   "word": 131,
+   "end": 56.33,
+   "words": "pesawat bomber nabrak Empire State Building."
+  },
+  {
+   "scene": "fall75",
+   "start": 56.33,
+   "word": 137,
+   "end": 58.4,
+   "words": "Liftnya jatuh tujuh puluh lima lantai,"
+  },
+  {
+   "scene": "survive",
+   "start": 58.4,
+   "word": 143,
+   "end": 60.84,
+   "words": "dan operatornya tetap selamat."
+  },
+  {
+   "scene": "outro",
+   "start": 60.84,
+   "word": 147,
+   "end": 64.58,
+   "words": "Selamat, sekarang kamu lebih paham soal lift daripada kebanyakan orang."
+  },
+  {
+   "scene": "outro_q",
+   "start": 64.58,
+   "word": 157,
+   "end": 67.34,
+   "words": "Jujur, kamu masih takut naik lift, nggak?"
+  }
+ ],
+ "labels": [],
+ "sfx": [
+  {
+   "tag": "boom",
+   "start": 39.67
+  }
+ ]
+}

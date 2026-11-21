@@ -1,0 +1,695 @@
+{
+"duration": 59.51116666666667,
+"words": [
+{
+"word": "Sudah",
+"start": 0.14,
+"end": 0.536
+},
+{
+"word": "sebulan,",
+"start": 0.536,
+"end": 1.13
+},
+{
+"word": "jamu",
+"start": 1.28,
+"end": 1.637
+},
+{
+"word": "buatan",
+"start": 1.637,
+"end": 1.993
+},
+{
+"word": "Mbah",
+"start": 1.993,
+"end": 2.172
+},
+{
+"word": "Sarni",
+"start": 2.172,
+"end": 2.528
+},
+{
+"word": "rasanya",
+"start": 2.528,
+"end": 3.063
+},
+{
+"word": "aneh.",
+"start": 3.063,
+"end": 3.42
+},
+{
+"word": "Kemanisan.",
+"start": 3.73,
+"end": 4.57
+},
+{
+"word": "Kunyit",
+"start": 4.88,
+"end": 5.218
+},
+{
+"word": "asamnya",
+"start": 5.218,
+"end": 5.725
+},
+{
+"word": "seperti",
+"start": 5.725,
+"end": 6.232
+},
+{
+"word": "sirup,",
+"start": 6.232,
+"end": 6.57
+},
+{
+"word": "beras",
+"start": 6.88,
+"end": 7.18
+},
+{
+"word": "kencurnya",
+"start": 7.18,
+"end": 7.63
+},
+{
+"word": "seperti",
+"start": 7.63,
+"end": 8.08
+},
+{
+"word": "permen.",
+"start": 8.08,
+"end": 8.38
+},
+{
+"word": "Anehnya,",
+"start": 8.68,
+"end": 9.38
+},
+{
+"word": "warga",
+"start": 9.52,
+"end": 9.895
+},
+{
+"word": "Gang",
+"start": 9.895,
+"end": 10.083
+},
+{
+"word": "Mawar",
+"start": 10.083,
+"end": 10.458
+},
+{
+"word": "tetap",
+"start": 10.458,
+"end": 10.964
+},
+{
+"word": "antre",
+"start": 10.964,
+"end": 11.339
+},
+{
+"word": "setiap",
+"start": 11.339,
+"end": 11.715
+},
+{
+"word": "pagi.",
+"start": 11.715,
+"end": 12.09
+},
+{
+"word": "Pak",
+"start": 12.38,
+"end": 12.564
+},
+{
+"word": "Sobri",
+"start": 12.564,
+"end": 12.931
+},
+{
+"word": "minum",
+"start": 12.931,
+"end": 13.299
+},
+{
+"word": "dua",
+"start": 13.299,
+"end": 13.482
+},
+{
+"word": "gelas.",
+"start": 13.482,
+"end": 13.85
+},
+{
+"word": "Bu",
+"start": 14.15,
+"end": 14.35
+},
+{
+"word": "Lastri",
+"start": 14.35,
+"end": 14.75
+},
+{
+"word": "bilang,",
+"start": 14.75,
+"end": 15.15
+},
+{
+"word": "\"Enak,",
+"start": 15.44,
+"end": 16.16
+},
+{
+"word": "Mbah,",
+"start": 16.41,
+"end": 16.85
+},
+{
+"word": "pas!\"",
+"start": 17.16,
+"end": 17.33
+},
+{
+"word": "Bahkan",
+"start": 17.33,
+"end": 17.67
+},
+{
+"word": "Mas",
+"start": 17.67,
+"end": 17.84
+},
+{
+"word": "Gilang,",
+"start": 17.84,
+"end": 18.18
+},
+{
+"word": "yang",
+"start": 18.18,
+"end": 18.35
+},
+{
+"word": "tidak",
+"start": 18.35,
+"end": 18.69
+},
+{
+"word": "suka",
+"start": 18.69,
+"end": 19.03
+},
+{
+"word": "manis,",
+"start": 19.03,
+"end": 19.37
+},
+{
+"word": "ikut",
+"start": 19.6,
+"end": 19.892
+},
+{
+"word": "membeli.",
+"start": 19.892,
+"end": 20.33
+},
+{
+"word": "Laras",
+"start": 20.66,
+"end": 21.013
+},
+{
+"word": "penasaran.",
+"start": 21.013,
+"end": 21.72
+},
+{
+"word": "Pagi",
+"start": 22.03,
+"end": 22.37
+},
+{
+"word": "itu,",
+"start": 22.37,
+"end": 22.71
+},
+{
+"word": "ia",
+"start": 22.71,
+"end": 22.88
+},
+{
+"word": "datang",
+"start": 22.88,
+"end": 23.22
+},
+{
+"word": "lebih",
+"start": 23.22,
+"end": 23.56
+},
+{
+"word": "awal",
+"start": 23.56,
+"end": 23.9
+},
+{
+"word": "dan",
+"start": 23.9,
+"end": 24.07
+},
+{
+"word": "mengintip",
+"start": 24.07,
+"end": 24.58
+},
+{
+"word": "ke",
+"start": 24.58,
+"end": 24.75
+},
+{
+"word": "dapur.",
+"start": 24.75,
+"end": 25.09
+},
+{
+"word": "Mbah",
+"start": 25.4,
+"end": 25.563
+},
+{
+"word": "Sarni",
+"start": 25.563,
+"end": 25.89
+},
+{
+"word": "sedang",
+"start": 25.89,
+"end": 26.217
+},
+{
+"word": "menuang",
+"start": 26.217,
+"end": 26.543
+},
+{
+"word": "gula.",
+"start": 26.543,
+"end": 26.87
+},
+{
+"word": "Banyak",
+"start": 27.17,
+"end": 27.454
+},
+{
+"word": "sekali.",
+"start": 27.454,
+"end": 27.88
+},
+{
+"word": "Ia",
+"start": 28.2,
+"end": 28.355
+},
+{
+"word": "mendekatkan",
+"start": 28.355,
+"end": 28.977
+},
+{
+"word": "gelas",
+"start": 28.977,
+"end": 29.288
+},
+{
+"word": "takar",
+"start": 29.288,
+"end": 29.598
+},
+{
+"word": "ke",
+"start": 29.598,
+"end": 29.754
+},
+{
+"word": "matanya,",
+"start": 29.754,
+"end": 30.22
+},
+{
+"word": "menyipit,",
+"start": 30.54,
+"end": 30.98
+},
+{
+"word": "lalu",
+"start": 31.3,
+"end": 31.58
+},
+{
+"word": "menuang",
+"start": 31.58,
+"end": 31.86
+},
+{
+"word": "lagi.",
+"start": 31.86,
+"end": 32.14
+},
+{
+"word": "Mata",
+"start": 32.46,
+"end": 32.851
+},
+{
+"word": "Mbah",
+"start": 32.851,
+"end": 33.047
+},
+{
+"word": "Sarni",
+"start": 33.047,
+"end": 33.438
+},
+{
+"word": "mulai",
+"start": 33.438,
+"end": 33.829
+},
+{
+"word": "rabun.",
+"start": 33.829,
+"end": 34.22
+},
+{
+"word": "Dan",
+"start": 34.53,
+"end": 34.711
+},
+{
+"word": "ia",
+"start": 34.711,
+"end": 34.892
+},
+{
+"word": "tidak",
+"start": 34.892,
+"end": 35.454
+},
+{
+"word": "mau",
+"start": 35.454,
+"end": 35.635
+},
+{
+"word": "ada",
+"start": 35.635,
+"end": 35.997
+},
+{
+"word": "yang",
+"start": 35.997,
+"end": 36.178
+},
+{
+"word": "tahu.",
+"start": 36.178,
+"end": 36.54
+},
+{
+"word": "Laras",
+"start": 36.87,
+"end": 37.17
+},
+{
+"word": "tidak",
+"start": 37.17,
+"end": 37.47
+},
+{
+"word": "bilang",
+"start": 37.47,
+"end": 37.77
+},
+{
+"word": "apa-apa.",
+"start": 37.77,
+"end": 38.22
+},
+{
+"word": "Malam",
+"start": 38.52,
+"end": 38.868
+},
+{
+"word": "itu,",
+"start": 38.868,
+"end": 39.347
+},
+{
+"word": "ia",
+"start": 39.347,
+"end": 39.521
+},
+{
+"word": "mengambil",
+"start": 39.521,
+"end": 40.043
+},
+{
+"word": "spidol",
+"start": 40.043,
+"end": 40.392
+},
+{
+"word": "merah.",
+"start": 40.392,
+"end": 40.74
+},
+{
+"word": "Diam-diam,",
+"start": 41.06,
+"end": 41.459
+},
+{
+"word": "ia",
+"start": 41.459,
+"end": 41.658
+},
+{
+"word": "menggambar",
+"start": 41.658,
+"end": 42.387
+},
+{
+"word": "garis",
+"start": 42.387,
+"end": 42.786
+},
+{
+"word": "tebal",
+"start": 42.786,
+"end": 43.184
+},
+{
+"word": "di",
+"start": 43.184,
+"end": 43.384
+},
+{
+"word": "setiap",
+"start": 43.384,
+"end": 43.783
+},
+{
+"word": "gelas",
+"start": 43.783,
+"end": 44.182
+},
+{
+"word": "takar",
+"start": 44.182,
+"end": 44.581
+},
+{
+"word": "Mbah.",
+"start": 44.581,
+"end": 44.78
+},
+{
+"word": "Besar.",
+"start": 45.09,
+"end": 45.56
+},
+{
+"word": "Jelas.",
+"start": 45.88,
+"end": 46.46
+},
+{
+"word": "Besok",
+"start": 46.76,
+"end": 47.088
+},
+{
+"word": "paginya,",
+"start": 47.088,
+"end": 47.58
+},
+{
+"word": "jamu",
+"start": 47.77,
+"end": 48.106
+},
+{
+"word": "Mbah",
+"start": 48.106,
+"end": 48.273
+},
+{
+"word": "Sarni",
+"start": 48.273,
+"end": 48.609
+},
+{
+"word": "kembali",
+"start": 48.609,
+"end": 49.112
+},
+{
+"word": "pas.",
+"start": 49.112,
+"end": 49.28
+},
+{
+"word": "Dan",
+"start": 49.59,
+"end": 49.813
+},
+{
+"word": "warga?",
+"start": 49.813,
+"end": 50.26
+},
+{
+"word": "Ternyata",
+"start": 50.58,
+"end": 51.026
+},
+{
+"word": "mereka",
+"start": 51.026,
+"end": 51.471
+},
+{
+"word": "sudah",
+"start": 51.471,
+"end": 51.769
+},
+{
+"word": "tahu",
+"start": 51.769,
+"end": 52.066
+},
+{
+"word": "sejak",
+"start": 52.066,
+"end": 52.363
+},
+{
+"word": "awal.",
+"start": 52.363,
+"end": 52.66
+},
+{
+"word": "Mereka",
+"start": 52.97,
+"end": 53.448
+},
+{
+"word": "hanya",
+"start": 53.448,
+"end": 53.767
+},
+{
+"word": "tidak",
+"start": 53.767,
+"end": 54.086
+},
+{
+"word": "ingin",
+"start": 54.086,
+"end": 54.404
+},
+{
+"word": "Mbah",
+"start": 54.404,
+"end": 54.564
+},
+{
+"word": "berhenti",
+"start": 54.564,
+"end": 55.042
+},
+{
+"word": "berjualan.",
+"start": 55.042,
+"end": 55.52
+},
+{
+"word": "Kadang,",
+"start": 55.82,
+"end": 56.3
+},
+{
+"word": "yang",
+"start": 56.57,
+"end": 56.721
+},
+{
+"word": "membuat",
+"start": 56.721,
+"end": 57.023
+},
+{
+"word": "sesuatu",
+"start": 57.023,
+"end": 57.475
+},
+{
+"word": "terasa",
+"start": 57.475,
+"end": 57.928
+},
+{
+"word": "manis,",
+"start": 57.928,
+"end": 58.23
+},
+{
+"word": "bukan",
+"start": 58.38,
+"end": 58.74
+},
+{
+"word": "gulanya.",
+"start": 58.74,
+"end": 59.28
+}
+]
+}

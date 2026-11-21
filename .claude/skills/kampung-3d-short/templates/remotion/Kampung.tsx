@@ -17,7 +17,7 @@ export type StoryDef = {
   shots: Shot[];
   tracks: Record<string, Track>; // roster ids + "belang" for the cat
   words: Word[];
-  extra?: (set: KampungSet, scene: THREE.Scene) => (t: number) => void; // per-story props
+  extra?: (set: KampungSet, scene: THREE.Scene, cast: Record<string, Warga>) => (t: number) => void; // per-story props
 };
 
 const prop = () => getInputProps() as { dpr?: number; aa?: boolean; shadow?: "basic" | "pcf" | "soft" | "off"; smap?: number };
@@ -50,7 +50,7 @@ const Inner: React.FC<{ story: StoryDef; shot: Shot }> = ({ story, shot }) => {
     for (const s of ROSTER) if (story.tracks[s.id]) { cast[s.id] = new Warga(s); scene.add(cast[s.id].group); }
     const cat = story.tracks.belang ? new Kucing() : null;
     if (cat) scene.add(cat.group);
-    const extra = story.extra?.(set, scene);
+    const extra = story.extra?.(set, scene, cast);
     return { set, cast, cat, extra };
   }, [scene, story]);
 
@@ -75,6 +75,7 @@ const Inner: React.FC<{ story: StoryDef; shot: Shot }> = ({ story, shot }) => {
   }
   w.set.tick(t);
   w.extra?.(t);
+  w.set.setLight(shot.light ?? "pagi");
   const fc = shot.focus ?? [0, 0];
   w.set.setFocus(fc[0], fc[1]);
   cameraAt(shot, t, camera as THREE.PerspectiveCamera);

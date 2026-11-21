@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { DecalGeometry } from "three/examples/jsm/geometries/DecalGeometry.js";
 
-export type Expr = "netral" | "senyum" | "tawa" | "sedih" | "nangis" | "kaget" | "marah" | "bingung" | "merem";
+export type Expr = "netral" | "senyum" | "tawa" | "sedih" | "nangis" | "kaget" | "marah" | "bingung" | "merem" | "sipit" | "kedip" | "meringis";
 export const EXPRS: Expr[] = ["netral", "senyum", "tawa", "sedih", "nangis", "kaget", "marah", "bingung", "merem"];
 
 export type PatternKind = "polos" | "batik" | "kotak" | "bunga" | "garis";
@@ -161,6 +161,18 @@ function drawFace(g: CanvasRenderingContext2D, s: Spec, e: Expr, look: [number, 
   const [lx, ly] = look;
   for (const sx of [-1, 1]) {
     const x = 256 + sx * EX;
+    if (e === "sipit") {
+      g.strokeStyle = ink; g.lineWidth = 14; g.beginPath(); g.moveTo(x - 32, EY + 4); g.quadraticCurveTo(x, EY - 6, x + 32, EY + 4); g.stroke();
+      g.lineWidth = 6; g.beginPath(); g.moveTo(x + sx * 34, EY - 2); g.lineTo(x + sx * 46, EY - 12); g.moveTo(x + sx * 34, EY + 8); g.lineTo(x + sx * 48, EY + 10); g.stroke();
+      continue;
+    }
+    if ((e === "kedip" && sx < 0) || (e === "meringis" && !blink)) {
+      g.strokeStyle = ink; g.lineWidth = 15; g.beginPath();
+      if (e === "kedip") g.arc(x, EY + 18, 30, Math.PI * 1.12, Math.PI * 1.88);
+      else { g.moveTo(x - sx * 30, EY - 12); g.lineTo(x + sx * 10, EY + 4); g.lineTo(x - sx * 30, EY + 20); }
+      g.stroke();
+      continue;
+    }
     if (closedHappy) {
       g.strokeStyle = ink; g.lineWidth = 15; g.beginPath();
       if (blink && e !== "tawa" && e !== "merem") { g.moveTo(x - 30, EY + 6); g.quadraticCurveTo(x, EY + 18, x + 30, EY + 6); }
@@ -187,7 +199,7 @@ function drawFace(g: CanvasRenderingContext2D, s: Spec, e: Expr, look: [number, 
   // brows: [innerY, outerY] per expression, + arch
   const B: Record<Expr, [number, number, number]> = {
     netral: [158, 158, 6], senyum: [150, 154, 10], tawa: [140, 146, 12], sedih: [132, 168, -4], nangis: [128, 166, -6],
-    kaget: [118, 122, 14], marah: [186, 146, -2], bingung: [150, 150, 6], merem: [154, 156, 8],
+    kaget: [118, 122, 14], marah: [186, 146, -2], bingung: [150, 150, 6], merem: [154, 156, 8], sipit: [176, 160, -2], kedip: [146, 152, 10], meringis: [176, 150, 0],
   };
   g.strokeStyle = brow; g.lineWidth = s.age === "lansia" ? 20 : 17;
   for (const sx of [-1, 1]) {
@@ -212,8 +224,9 @@ function drawFace(g: CanvasRenderingContext2D, s: Spec, e: Expr, look: [number, 
     const w = 34, h = 14 + talk * 22;
     g.beginPath(); g.moveTo(256 - w, MY + up); g.quadraticCurveTo(256, MY - 10, 256 + w, MY + up); g.quadraticCurveTo(256, MY + h * 1.6, 256 - w, MY + up); g.fill();
     g.save(); g.clip(); g.fillStyle = "#e0707a"; g.beginPath(); g.ellipse(256, MY + h * 1.3, 24, 12, 0, 0, Math.PI * 2); g.fill(); g.restore();
-  } else if (e === "netral" || e === "merem") { g.beginPath(); g.moveTo(226, MY); g.quadraticCurveTo(256, MY + (e === "merem" ? 14 : 6), 286, MY); g.stroke(); }
-  else if (e === "senyum") { g.beginPath(); g.arc(256, MY - 34, 52, Math.PI * 0.2, Math.PI * 0.8); g.stroke(); }
+  } else if (e === "meringis") { g.fillStyle = "#fffaf0"; g.beginPath(); g.roundRect(206, MY - 10, 100, 30, 12); g.fill(); g.lineWidth = 7; g.beginPath(); g.roundRect(206, MY - 10, 100, 30, 12); g.stroke(); g.beginPath(); g.moveTo(206, MY + 5); g.lineTo(306, MY + 5); g.stroke(); }
+  else if (e === "netral" || e === "merem" || e === "sipit") { g.beginPath(); g.moveTo(226, MY); g.quadraticCurveTo(256, MY + (e === "merem" ? 14 : 6), 286, MY); g.stroke(); }
+  else if (e === "senyum" || e === "kedip") { g.beginPath(); g.arc(256, MY - 34, 52, Math.PI * 0.2, Math.PI * 0.8); g.stroke(); }
   else if (e === "tawa" || e === "nangis") {
     g.beginPath();
     if (e === "tawa") { g.moveTo(190, MY - 12); g.quadraticCurveTo(256, MY + 100, 322, MY - 12); g.closePath(); }
@@ -250,7 +263,8 @@ export class Warga {
   readonly spec: Spec;
   private body = new THREE.Group();
   private headPivot = new THREE.Group();
-  private armL!: Limb; private armR!: Limb; private legL!: Limb; private legR!: Limb;
+  private armL!: Limb; private armR!: Limb;
+  readonly hands: { L: THREE.Group; R: THREE.Group } = { L: new THREE.Group(), R: new THREE.Group() }; private legL!: Limb; private legR!: Limb;
   private faceMat!: THREE.MeshStandardMaterial;
   private faceTex = new Map<string, THREE.CanvasTexture>();
   private hipY = 0;
@@ -326,6 +340,8 @@ export class Warga {
         part(pivot, capsule(armR0, armLen * 0.62), skin, [0, -armLen * 0.58, 0]);
       }
       part(pivot, new THREE.SphereGeometry(armR0 * 1.38, 18, 14), skin, [0, -armLen - 0.02, 0]);
+      const anchor = sx > 0 ? this.hands.L : this.hands.R;
+      anchor.position.set(0, -armLen - 0.02, 0); pivot.add(anchor);
       return { pivot };
     };
     this.armL = mkArm(1); this.armR = mkArm(-1);

@@ -364,7 +364,7 @@ add(Path(PL(DAMIETTA), T(B, 'Nil'), S3, 1.4, color=CYAN, width=5, snd=False, min
 add(Path(PL(ROSETTA), T(B, 'Nil') + .3, S3, 1.4, color=CYAN, width=5, snd=False, minvw=2.0))
 add(Region(DELTA, T(B, 'Delta'), T(B, 'Di', 2) + .5, LIME, alpha=.6, zoomfade=(1.5, 3), snd=True, glow=(255, 255, 160)))
 add(Pin(31.235, 30.044, T(B, 'Kairo'), T(B, 'Tapi')))
-add(Counter(31.235, 30.044, T(B, 'dua') - .1, T(B, 'Piramida'), 20_000_000, spin=.9, dy=-90, size=140))
+add(Counter(31.235, 30.044, T(B, 'Kairo') + .1, T(B, 'Piramida') + .1, 20_000_000, spin=.9, dy=-90, size=140))
 add(Pin(31.134, 29.979, T(B, 'Piramida'), T(B, 'Tapi') + .4))
 add(Sprite(A.place_card(A.card('pyramids', 1), -5), 31.134, 29.979, T(B, 'Giza'), T(B, 'naik') , off=(260, -170), from_pin=True))
 add(IconRow(31.134, 29.979, [('pyramid', T(B, 'Piramida'))], T(B, 'Tapi') + .3, off=(-180, -60)))

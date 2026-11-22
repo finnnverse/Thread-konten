@@ -435,7 +435,7 @@ def frame(t):
         ctx.set_source(g); ctx.rectangle(0, 0, W, 560); ctx.fill(); ctx.restore()
     for c in CAPS: draw_caption(ctx, t, c)
     surf.flush()
-    arr = np.frombuffer(surf.get_data(), np.uint8).reshape(H, W, 4)
+    arr = np.frombuffer(surf.get_data(), np.uint8).reshape(H, W, 4).copy(); del ctx, surf
     return rewind_fx(arr, t)
 
 # ---------------- sfx cue list ----------------

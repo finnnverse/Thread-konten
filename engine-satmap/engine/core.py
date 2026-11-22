@@ -178,7 +178,8 @@ def text_surface(text, kind, size, color, stroke=5, shadow=True, maxw=1000):
     return pil_to_surface(im)
 
 def draw_text(ctx, text, x, y, size, color='white', kind='body', scale=1.0, alpha=1.0, stroke=5, shadow=True, rot=0.0, maxw=1000):
-    s = text_surface(text, kind, size, color if isinstance(color, str) else tuple(color), stroke, shadow, maxw)
+    if size < 4 or scale <= 0.01 or alpha <= 0.003: return 0
+    s = text_surface(text, kind, int(size), color if isinstance(color, str) else tuple(color), stroke, shadow, maxw)
     draw_surface(ctx, s, x, y, s.get_width() * scale, rot=rot, alpha=alpha)
     return s.get_height()
 

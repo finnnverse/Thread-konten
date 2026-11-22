@@ -31,7 +31,8 @@ elif mode == 'full':
     for j in range(k):
         out = os.path.join(seg, f'{j:02d}.mp4')
         procs.append(subprocess.Popen([sys.executable, '-I', __file__, proj, 'seg', str(b[j]), str(b[j + 1]), out]))
-    for p in procs: p.wait()
+    codes = [p.wait() for p in procs]
+    if any(codes): print('SEGMENT FAILED', codes); sys.exit(1)
     with open(os.path.join(seg, 'list.txt'), 'w') as f:
         for j in range(k): f.write(f"file '{j:02d}.mp4'\n")
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', os.path.join(seg, 'list.txt'), '-c', 'copy', os.path.join(proj, 'video_silent.mp4')])

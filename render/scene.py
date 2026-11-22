@@ -153,12 +153,10 @@ I = 'INTRO'
 shot(0.0, 26, 34, 80, .14, -4)
 shot(0.55, 30.6, 26.8, 17, .18, 3, dur=2.3)
 shot(T(I, 'perbatasannya') - .3, 32.0, 23.6, 13, .17, -2, dur=1.2)
-shot(T(I, 'Kamu') - .1, 30.4, 27.2, 18, .18, 2, dur=1.1)
-shot(T(I, 'sampai') - .1, 27, 30, 55, .15, -3, dur=1.4)
+shot(T(I, 'Kamu') + .2, 28, 29, 45, .15, -3)
 # BAB 1
 B = 'BAB 1'
 shot(S1 - .2, 27.0, 27.0, 26, .18, 3, dur=1.6)
-shot(T(B, 'Sisanya') - .2, 30.6, 26.6, 15, .19, -3, dur=1.2)
 shot(T(B, 'Dari') - .1, 30.0, 27.0, 40, .13, 0, dur=1.5)
 shot(T(B, 'Garis') - .1, 31.3, 26.6, 15, .19, 4, dur=1.4)
 shot(T(B, 'Satu') - .3, 30.80, 28.10, 1.6, .2, -6, dur=2.0)
@@ -168,7 +166,7 @@ B = 'BAB 2'
 shot(S2 - .2, 31.0, 30.75, 4.6, .19, -4, dur=2.2, mid=28)
 shot(T(B, 'Di', 2) - .1, 31.24, 30.06, 0.5, .2, 5, dur=1.9)
 shot(T(B, 'pinggirnya') - .1, 31.15, 29.98, 0.27, .21, -2, dur=1.0)
-shot(T(B, 'Tapi') - .2, 31.0, 31.05, 3.3, .19, 3, dur=1.9)
+shot(T(B, 'Tapi') + .1, 31.0, 31.05, 3.3, .19, 3)
 # BAB 3
 B = 'BAB 3'
 shot(S3 - .2, 32.42, 30.6, 3.0, .19, -3, dur=2.0, mid=22)
@@ -194,8 +192,7 @@ shot(T(B, 'karena') - .1, 34.0, 22.2, 9, .18, 2, dur=1.0)
 shot(T(B, 'Ini') - .1, 26, 21, 60, .15, -2, dur=1.8)
 # BAB 7
 B = 'BAB 7'
-shot(S7 - .2, 27.5, 27.8, 11, .18, 3, dur=1.8, mid=30)
-shot(T(B, 'ada') - .1, 27.3, 29.55, 3.5, .19, -3, dur=1.0)
+shot(S7 - .2, 27.6, 28.9, 7.5, .18, 3, mid=26)
 shot(T(B, 'Ada') - .25, 27.95, 27.35, 1.8, .2, 3, dur=1.1)
 shot(T(B, 'Oasis') - .2, 25.52, 29.2, 3.5, .19, -3, dur=1.2)
 shot(T(B, 'Sementara') - .1, 31.72, 30.02, 1.2, .2, 4, dur=2.0)
@@ -205,48 +202,119 @@ shot(SP - .5, 28, 30, 55, .15, 3, dur=3.0)
 DIAG = (T('BAB 7', 'sekitar'), T('BAB 7', 'Ada') - .35)  # hard-cut diagram window
 
 
-def _state(s):
-    return np.array([s[1], md(s[2]), math.log(s[3]), s[4], s[5]], np.float64)
+CHAP = [0.0, S1, S2, S3, S4, S5, S6, S7, SP]
+
+
+def roll_at(t):
+    """continuous slow orbit: drifts ~8 deg per chapter, direction alternating (never jumps)"""
+    r = -4.0
+    for i, c0 in enumerate(CHAP):
+        c1 = CHAP[i + 1] if i + 1 < len(CHAP) else DUR
+        d = 1 if i % 2 == 0 else -1
+        if t >= c1: r += d * 8
+        elif t > c0: r += d * 8 * smooth(c0, c1, t); break
+        else: break
+    return r
+
+
+RHO = 1.35
+
+
+def vanwijk(c0, w0, c1, w1, rho=RHO):
+    """optimal smooth zoom-pan (van Wijk & Nuij): returns (S, f(s)->(c,w))"""
+    c0, c1 = np.asarray(c0, float), np.asarray(c1, float)
+    d = c1 - c0; u1 = math.hypot(*d)
+    if u1 < 1e-6 * max(w0, w1):
+        S = abs(math.log(w1 / w0)) / rho
+        return S, (lambda s: (c0 + d * (s / S if S > 0 else 1), w0 * math.exp((1 if w1 > w0 else -1) * rho * s)))
+    r2 = rho * rho
+    def b(i):
+        wi = w0 if i == 0 else w1
+        return (w1 * w1 - w0 * w0 + (-1) ** i * r2 * r2 * u1 * u1) / (2 * wi * r2 * u1)
+    def r(i):
+        bi = b(i); return math.log(-bi + math.sqrt(bi * bi + 1))
+    r0, r1 = r(0), r(1)
+    S = (r1 - r0) / rho
+    def f(s):
+        cs = math.cosh(r0)
+        u = w0 / r2 * (cs * math.tanh(rho * s + r0) - math.sinh(r0))
+        return c0 + d * (u / u1), w0 * cs / math.cosh(rho * s + r0)
+    return S, f
+
+
+def warp_ease(u):
+    u = min(1, max(0, u))
+    return ease_io(u ** 1.12)
+
+
+def _xyw(s):
+    return np.array([s[1], md(s[2])]), s[3]
+
+
+_held_cache = {}
+
+
+def held(j, tt):
+    """state after arriving at shot j: very slow push-in (vw -4% per 5 s), eased in"""
+    c, w = _xyw(SHOTS[j]); k = SHOTS[j][4]
+    arr = SHOTS[j][0] + (flight_dur(j) if j > 0 else 0)
+    h = max(0.0, tt - arr)
+    he = h - 1 + math.exp(-h)
+    return c, w * (.96 ** (he / 5)), k
+
+
+_paths = {}
+
+
+def path(i):
+    if i in _paths: return _paths[i]
+    c0, w0, k0 = held(i - 1, SHOTS[i][0])
+    c1, w1 = _xyw(SHOTS[i]); k1 = SHOTS[i][4]
+    mid = SHOTS[i][7]
+    segs = []
+    if mid:  # chapter transition: rise to an overview, then descend (one continuous curve)
+        cm = (c0 + c1) / 2
+        segs.append(vanwijk(c0, w0, cm, mid)); segs.append(vanwijk(cm, mid, c1, w1))
+    else:
+        segs.append(vanwijk(c0, w0, c1, w1))
+    tot = sum(S for S, _ in segs)
+    _paths[i] = (segs, tot, k0, k1)
+    return _paths[i]
 
 
 def cam_at(t):
-    """naik-geser-turun flights between shots, slow drift + orbit while holding"""
     i = 0
     while i + 1 < len(SHOTS) and SHOTS[i + 1][0] <= t: i += 1
-    # state at the start of shot i flight = drifted end state of previous shot
-    def held(j, tt):
-        s = _state(SHOTS[j]).copy()
-        arr = SHOTS[j][0] + (flight_dur(j) if j > 0 else 0)
-        h = max(0, tt - arr)
-        nxt = SHOTS[j + 1][0] if j + 1 < len(SHOTS) else 1e9
-        hold_len = max(.01, nxt - arr)
-        s[2] += math.log(.96) * h / 5
-        if hold_len > 4:
-            dirn = 1 if j % 2 == 0 else -1
-            s[4] += dirn * 8 * smooth(0, 1, h / max(hold_len, 6))
-        return s
-    if i == 0: s = held(0, t); return Cam(s[0], s[1], math.exp(s[2]), s[3], s[4])
-    a = held(i - 1, SHOTS[i][0]); b = _state(SHOTS[i])
-    d = flight_dur(i); u = (t - SHOTS[i][0]) / d
-    if u >= 1:
-        s = held(i, t); return Cam(s[0], s[1], math.exp(s[2]), s[3], s[4])
-    e = ease_io(u)
-    pos = a[:2] + (b[:2] - a[:2]) * e
-    lv = a[2] + (b[2] - a[2]) * e
-    dist = math.hypot(*(b[:2] - a[:2]))
-    mid = SHOTS[i][7]
-    top = max(a[2], b[2])
-    tgt = math.log(mid) if mid else math.log(max(math.exp(top), dist * 1.5))
-    bump = max(0, tgt - top)
-    lv += bump * math.sin(math.pi * ease_io(u) ** .9)
-    k = a[3] + (b[3] - a[3]) * e; r = a[4] + (b[4] - a[4]) * e
-    return Cam(pos[0], pos[1], math.exp(lv), k, r)
+    rot = roll_at(t)
+    if i == 0 or t >= SHOTS[i][0] + flight_dur(i):
+        c, w, k = held(i, t)
+        return Cam(c[0], c[1], w, k, rot)
+    segs, tot, k0, k1 = path(i)
+    u = (t - SHOTS[i][0]) / flight_dur(i)
+    e = warp_ease(u)
+    s = e * tot
+    for S, f in segs:
+        if s <= S or (S, f) is segs[-1]:
+            c, w = f(min(s, S)); break
+        s -= S
+    k = k0 + (k1 - k0) * smooth(0, 1, e)
+    return Cam(c[0], c[1], w, k, rot)
+
+
+_fd = {}
 
 
 def flight_dur(i):
-    s = SHOTS[i]
-    if s[6]: return s[6]
-    return 1.5
+    """duration from path length (consistent perceived speed), capped by the time to the next shot"""
+    if i == 0: return 0
+    if i in _fd: return _fd[i]
+    _fd[i] = 1.2  # provisional (path() needs held(i-1) which needs flight_dur(i-1) only)
+    segs, tot, _, _ = path(i)
+    d = min(3.0, max(1.0, .75 + .5 * tot))
+    if SHOTS[i][7]: d = max(d, 1.8)
+    if i + 1 < len(SHOTS): d = min(d, SHOTS[i + 1][0] - SHOTS[i][0] - .3)
+    _fd[i] = d
+    return d
 
 
 def flight_windows():

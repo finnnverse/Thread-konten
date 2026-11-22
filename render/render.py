@@ -8,20 +8,36 @@ import elements as E
 
 TEX = os.environ['TEX_DIR']
 base = Tex(f'{TEX}/base.png', f'{TEX}/base.txt', alpha=False)
-patches = [
-    Tex(f'{TEX}/p1_egypt_z8.png', f'{TEX}/p1_egypt_z8.txt', prev_ppd=60),
-    Tex(f'{TEX}/p2_delta_z10.png', f'{TEX}/p2_delta_z10.txt', prev_ppd=182),
-    Tex(f'{TEX}/p2_aswan_z10.png', f'{TEX}/p2_aswan_z10.txt', prev_ppd=182),
-    Tex(f'{TEX}/p3_cairo_z13.png', f'{TEX}/p3_cairo_z13.txt', prev_ppd=728),
-    Tex(f'{TEX}/p3_suez_z12.png', f'{TEX}/p3_suez_z12.txt', prev_ppd=728),
-    Tex(f'{TEX}/p3_aswan_z12.png', f'{TEX}/p3_aswan_z12.txt', prev_ppd=728),
-    Tex(f'{TEX}/p3_abusimbel_z13.png', f'{TEX}/p3_abusimbel_z13.txt', prev_ppd=728),
+_P = [
+    ('p1_egypt_z8', 45),
+    ('p2_delta_z10', 182),
+    ('p2_aswan_z10', 182),
+    ('p3_cairo_z13', 728),
+    ('p3_suez_z12', 728),
+    ('p3_aswan_z12', 728),
+    ('p3_abusimbel_z13', 728),
 ]
+patches = [Tex(f'{TEX}/{n}.png', f'{TEX}/{n}.txt', prev_ppd=p) for n, p in _P if os.path.exists(f'{TEX}/{n}.png')]
 
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
 VIG = (1 - .32 * (((xx - W / 2) / (W / 2)) ** 2 + ((yy - H / 2) / (H / 2)) ** 2) / 2)[..., None].astype(np.float32)
 del yy, xx
 FLIGHTS = S.flight_windows()
+_ty = np.arange(H, dtype=np.float32)
+TS = np.clip((0.30 * H - _ty) / (0.30 * H), 0, 1)[:, None, None] ** 1.3  # blur weight, strongest at the top edge
+
+
+def tiltshift(fr):
+    small = cv2.resize(fr, (W // 4, H // 4), interpolation=cv2.INTER_AREA)
+    bl = cv2.resize(cv2.GaussianBlur(small, (0, 0), 2.2), (W, H), interpolation=cv2.INTER_LINEAR)
+    return fr * (1 - TS) + bl * TS
+
+
+def bloom(fr):
+    small = cv2.resize(fr, (W // 4, H // 4), interpolation=cv2.INTER_AREA)
+    hi = np.clip(small - 205, 0, None)
+    b = cv2.resize(cv2.GaussianBlur(hi, (0, 0), 6), (W, H), interpolation=cv2.INTER_LINEAR)
+    return np.minimum(fr + b * .18, 255)
 
 
 def cam_speed(t):
@@ -54,9 +70,10 @@ def frame(t):
         fr = acc / n
     else:
         fr = render_map(cam, base, patches)
-    fr = fr * VIG
+    fr = tiltshift(fr) * VIG
     for e in S.EL:
         if e.geo and e.active(t): e.draw(fr, cam, t)
+    fr = bloom(fr)
     for e in S.EL:
         if not e.geo and e.active(t): e.draw(fr, cam, t)
     return fr

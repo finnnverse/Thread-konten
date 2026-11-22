@@ -22,6 +22,18 @@ class El:
     def active(self, t): return self.t0 <= t <= self.t1
 
 
+def tint(fr, L, col, fa, box):
+    """colour the area but keep the terrain texture visible (like a translucent highlighter)"""
+    x0, y0, x1, y1 = [int(v) for v in box]
+    x0, y0 = max(0, x0), max(0, y0); x1, y1 = min(W, x1), min(H, y1)
+    if x1 <= x0 or y1 <= y0: return
+    m = L[y0:y1, x0:x1, 3:4].astype(np.float32) / 255 * fa
+    f = fr[y0:y1, x0:x1]
+    lum = (f @ np.array([.3, .59, .11], np.float32))[..., None] / 255
+    c = np.array(col, np.float32) * (0.62 + 0.75 * (lum - .45))
+    f *= (1 - m); f += np.clip(c, 0, 255) * m
+
+
 class Region(El):
     """polygon fill + glowing outline. rings: list of (N,2) plane coords"""
     def __init__(self, rings, t0, t1, color=(150, 255, 60), alpha=.85, outline=(255, 255, 255), glow=(120, 240, 255),
@@ -54,7 +66,7 @@ class Region(El):
                 u = smooth(self.wipe[0], self.wipe[1], t)
                 ys = np.concatenate(rp)[:, 1]; cut = ys.min() + (ys.max() - ys.min() + 4) * u
                 L[int(max(0, min(H, cut))):] = 0
-            comp_premul(fr, L, fa, box)
+            tint(fr, L, col, fa, box)
         # outline: bright on arrival, then 40%
         oi = (1.0 if t - self.t0 < 1.0 else .4 + .6 * math.exp(-(t - self.t0 - 1.0) * 2.5)) * a * smooth(.5, 1.3, cam.vw)
         if self.lw > 0 and oi > .01:

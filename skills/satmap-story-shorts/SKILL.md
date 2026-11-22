@@ -91,7 +91,7 @@ Aturan menulis:
 - Minimal 3 angka konkret dan 3 analogi sehari-hari per video.
 - Satu istilah ilmiah/unik yang jadi "kata oleh-oleh" (refugium, Sundaland, zaman es).
 - Akhiri dengan nilai/aksi yang aman (konservasi, hukum), tanpa menggurui panjang.
-- Panjang 260-320 kata (±120-140 dtk). Bila user minta versi pendek: 150-180 kata, buang Mekanisme 2.
+- **Durasi: user minta MAKSIMAL 80 detik** (22 Nov 2026, "kepanjangan 2 menit"). Target 150-170 kata (±60-75 dtk). Pertahankan: hook paradoks, "kita mundur", 1 mekanisme + 1 twist, belokan "karena kita", punchline paralel, CTA 1 pertanyaan. Buang: mekanisme kedua, pembanding berlapis.
 - **Cek fakta setiap angka** (WebSearch lalu baca sumbernya; utamakan Wikipedia, IUCN, KLHK/BKSDA, jurnal, media besar). Catat sumber untuk deskripsi. Contoh jebakan di referensi: VO bilang laut turun "120 meter" tapi caption "108 METER" (tidak konsisten): angka di caption dan VO wajib sama.
 
 Topik yang cocok: misteri sebaran hewan/tumbuhan, "kenapa X hanya ada di Y", pulau/selat/gunung yang membentuk sejarah, bencana + dampak, zaman es/Sundaland, batas alam (Garis Wallace), spesies terakhir, kota/pulau yang hilang. Satu kawasan peta per video (kamera tidak terbang lintas benua, sama seperti aturan `map-route-shorts`).
@@ -139,7 +139,11 @@ Caption: `"TEKS|warna"`; baris tanpa warna = putih; `"TEKS|danger|big"` = punch 
 
 Bila `maproute-engine.zip` ada, pakai ulang: kamera `V(lon,lat,span)` + easing, `admin1()`/poligon Natural Earth untuk fill & outline, `align`, mixer + `auto_sfx`, `movers` (rute + ikon bergerak). Tambahkan modul:
 
-1. **`map/satbase.py`**: basemap citra satelit equirectangular, dipotong + diskalakan per frame sesuai kamera, color grade (saturasi -10%, kontras +5%, vignette 25%), dan vektor fill/label digambar di atasnya.
+**STATUS (22 Nov 2026): engine v1 SUDAH DIBANGUN** saat video pertama (komodo). File: `engine/basemap.py` (unduh tile elevasi), `engine/colorize.py` (pewarnaan gaya satelit), `engine/core.py` (kamera, caption atas, sprite, efek vektor cairo), `engine/sprites.py` (maskot SVG), `engine/render.py` (`stills` / `full` paralel 4 proses, ±0,1 dtk/frame → video 65 dtk ±3-4 menit), `engine/audio.py` (musik + SFX sintetis, ducking), proyek per video `projects/<slug>/video.py` (CamPath, CAPS, overlays, SCENES, SFX). Disimpan di repo `engine-satmap/`.
+
+**Basemap yang dipakai (bukan foto satelit):** AWS Terrain Tiles `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png` (elevasi + batimetri, bisa diakses dari container) → diwarnai prosedural: hutan hijau, sabana Nusa Tenggara cokelat-zaitun, gurun Australia merah, laut dangkal toska ke biru tua, hillshade. Level z5/z6/z7/z9/z10; level dipilih otomatis per zoom kamera. Keuntungan: efek muka laut (−120 m zaman es, banjir pesisir) akurat dari data DEM. Atribusi deskripsi: "Data elevasi: AWS Terrain Tiles (SRTM, GEBCO, ETOPO1)".
+
+1. **`map/satbase.py`** (rencana awal, digantikan basemap DEM di atas): basemap citra satelit equirectangular, dipotong + diskalakan per frame sesuai kamera, color grade (saturasi -10%, kontras +5%, vignette 25%), dan vektor fill/label digambar di atasnya.
    - Sumber citra: NASA Blue Marble Next Generation (domain publik). Untuk zoom pulau (span 2-4°) butuh resolusi tinggi (tile 21600x10800 per dunia atau 86400 per tile 500 m/px → ±125 m/px). Dari container ini `*.nasa.gov`, EOX, dan ArcGIS **diblokir**; `raw.githubusercontent.com` dan npm bisa, tapi tekstur di sana umumnya hanya 4K (terlalu buram untuk zoom pulau). Jadi: **minta user melampirkan** potongan Blue Marble/Sentinel-2 cloudless kawasan Indonesia (mis. bbox 90-145 BT, 12 LU-14 LS) sekali, simpan di `vendor/sat/`, pakai untuk semua video.
    - Efek muka laut turun/naik: pakai data batimetri (mis. GEBCO yang dilampirkan user, atau kontur -120 m Natural Earth `ne_10m_bathymetry_*`) sebagai masker, warnai area dangkal jadi daratan hijau-kecokelatan.
 2. **`scenes/`**: adegan kartun flat digambar prosedural (PIL/cairo/SVG → PNG per frame): `sky`, `night_forest`, `savanna`, `cave`, `rainforest_rain`, `grid_count`, `fridge`, `truck`, `house`, `school`. Setiap adegan menerima maskot + teks.
@@ -167,7 +171,8 @@ Struktur dan tata bahasa visual boleh mirip (itu genre). Yang **harus** milik se
 Daftar perubahan yang dipilih user disimpan di `brand` storyboard dan di catatan "Keputusan user" di bawah agar konsisten antar-video.
 
 ### Keputusan user
-- (kosong: isi saat user menentukan nama merek, maskot, palet, font, posisi watermark, frasa CTA)
+- Durasi maks 80 dtk.
+- Video uji pertama (komodo, 22 Nov 2026) memakai pilihan default Claude: aksen mangga #FFB020, merah #FF5470, hijau #4ADE80, toska #5EEAD4; font Baloo 2 ExtraBold (baris 1) + Lilita One (kata kunci) dengan outline gelap tipis; caption y≈250; maskot komodo sendiri bergaya stiker outline putih; tokoh peneliti helm kuning; CTA "Jujur deh..." + kartu pilihan bergambar potongan peta; tanpa watermark. Belum dikonfirmasi user: nama merek, watermark.
 
 ---
 

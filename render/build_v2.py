@@ -56,6 +56,26 @@ def land_mask(h, w, X0, Yt, ppd):
     return m
 
 
+_lakes = None
+def lake_mask(h, w, X0, Yt, ppd):
+    global _lakes
+    if _lakes is None:
+        sf = shapefile.Reader(NE + '/ne_10m_lakes.shp'); _lakes = []
+        for s_ in sf.shapes():
+            pp = list(s_.parts) + [len(s_.points)]
+            for i in range(len(pp) - 1): _lakes.append(np.asarray(s_.points[pp[i]:pp[i + 1]]))
+    m = np.zeros((h, w), np.uint8); X1 = X0 + w / ppd; Yb = Yt - h / ppd
+    for r in _lakes:
+        if r[:, 0].max() < X0 or r[:, 0].min() > X1: continue
+        Y = np.degrees(np.log(np.tan(np.pi / 4 + np.radians(np.clip(r[:, 1], -85, 85)) / 2)))
+        if Y.max() < Yb or Y.min() > Yt: continue
+        px = np.stack([(r[:, 0] - X0) * ppd, (Yt - Y) * ppd], 1)
+        cv2.fillPoly(m, [np.round(px * 8).astype(np.int32)], 255, cv2.LINE_AA, 3)
+    k = max(3, int(ppd * .03) | 1)
+    m = cv2.dilate(m, np.ones((k, k), np.uint8))
+    return cv2.GaussianBlur(m.astype(np.float32) / 255, (0, 0), max(1, k / 3))
+
+
 # ---- ocean-bottom relief, resampled to the same grid
 OB = None
 def ocean(h, w, X0, Yt, ppd):
@@ -98,6 +118,10 @@ def grade(img, X0, Yt, ppd, coast_px):
     out = land * mm + sea * (1 - mm)
     # inland water (Nile, lakes): satellite dark water on land -> teal
     wat = (np.clip((.30 - lum) / .10, 0, 1) * np.clip((a[..., 2] - a[..., 1] + .005) / .02, 0, 1) * np.clip((a[..., 2] - a[..., 0]) / .03, 0, 1))[..., None] * mm
+    # lakes (Lake Nasser etc.): inside the Natural Earth lake outline, dark pixels are water
+    lk = lake_mask(h, w, X0, Yt, ppd)
+    lw = (lk * np.clip((.45 - lum) / .12, 0, 1))[..., None]
+    wat = np.maximum(wat, lw)
     out = out * (1 - wat) + (light * .85) * wat
     return (np.clip(out, 0, 1) * 255).astype(np.uint8)
 

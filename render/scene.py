@@ -165,7 +165,7 @@ shot(T(B, 'Lebih') - .4, 30.8, 27.0, 16, .18, 2, dur=1.7)
 B = 'BAB 2'
 shot(S2 - .2, 31.0, 30.75, 4.6, .19, -4, dur=2.2, mid=28)
 shot(T(B, 'Di', 2) - .1, 31.24, 30.06, 0.5, .2, 5, dur=1.9)
-shot(T(B, 'pinggirnya') - .1, 31.15, 29.98, 0.27, .21, -2, dur=1.0)
+shot(T(B, 'Piramida') - .15, 31.15, 29.98, 0.27, .21, -2, dur=1.0)
 shot(T(B, 'Tapi') + .1, 31.0, 31.05, 3.3, .19, 3)
 # BAB 3
 B = 'BAB 3'
@@ -364,7 +364,7 @@ add(Path(PL(DAMIETTA), T(B, 'Nil'), S3, 1.4, color=CYAN, width=5, snd=False, min
 add(Path(PL(ROSETTA), T(B, 'Nil') + .3, S3, 1.4, color=CYAN, width=5, snd=False, minvw=2.0))
 add(Region(DELTA, T(B, 'Delta'), T(B, 'Di', 2) + .5, LIME, alpha=.6, zoomfade=(1.5, 3), snd=True, glow=(255, 255, 160)))
 add(Pin(31.235, 30.044, T(B, 'Kairo'), T(B, 'Tapi')))
-add(Counter(31.235, 30.044, T(B, 'dua') - .1, T(B, 'Tapi') - .15, 20_000_000, spin=.9, dy=-90, size=140))
+add(Counter(31.235, 30.044, T(B, 'dua') - .1, T(B, 'Piramida'), 20_000_000, spin=.9, dy=-90, size=140))
 add(Pin(31.134, 29.979, T(B, 'Piramida'), T(B, 'Tapi') + .4))
 add(Sprite(A.place_card(A.card('pyramids', 1), -5), 31.134, 29.979, T(B, 'Giza'), T(B, 'naik') , off=(260, -170), from_pin=True))
 add(IconRow(31.134, 29.979, [('pyramid', T(B, 'Piramida'))], T(B, 'Tapi') + .3, off=(-180, -60)))

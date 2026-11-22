@@ -68,7 +68,7 @@ class Region(El):
                 L[int(max(0, min(H, cut))):] = 0
             tint(fr, L, col, fa, box)
         # outline: bright on arrival, then 40%
-        oi = (1.0 if t - self.t0 < 1.0 else .4 + .6 * math.exp(-(t - self.t0 - 1.0) * 2.5)) * a * smooth(.5, 1.3, cam.vw)
+        oi = (1.0 if t - self.t0 < 1.0 else .4 + .6 * math.exp(-(t - self.t0 - 1.0) * 2.5)) * a * smooth(1.2, 2.8, cam.vw)
         if self.lw > 0 and oi > .01:
             O = blank()
             for r in rp: line_px(O, r, self.glowc, self.lw * 3.2, closed=True)

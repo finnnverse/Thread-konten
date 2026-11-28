@@ -15,7 +15,7 @@ from .geo import merc, unmerc, width_km_to_norm
 
 
 class Camera:
-    def __init__(self, keys, W=1080, H=1920):
+    def __init__(self, keys, W=1080, H=1920, smooth=0.16):
         keys = sorted(keys, key=lambda k: k["t"])
         self.W, self.H = W, H
         t = np.array([k["t"] for k in keys], float)
@@ -28,12 +28,24 @@ class Camera:
         if len(t) == 1:
             t = np.array([t[0], t[0] + 1]); mx, my, logw, roll, tilt = [np.repeat(a, 2) for a in (mx, my, logw, roll, tilt)]
         self.t0, self.t1 = t[0], t[-1]
-        self.f = {n: PchipInterpolator(t, v) for n, v in
-                  dict(mx=mx, my=my, logw=logw, roll=roll, tilt=tilt).items()}
+        f = {n: PchipInterpolator(t, v) for n, v in
+             dict(mx=mx, my=my, logw=logw, roll=roll, tilt=tilt).items()}
+        # Gaussian time-smoothing on a dense grid -> continuous acceleration (no jerk at keys)
+        self.dt = 1 / 480.0
+        self.grid = np.arange(t[0], t[-1] + self.dt, self.dt)
+        from scipy.ndimage import gaussian_filter1d
+        self.dense = {}
+        for n, fn in f.items():
+            v = fn(self.grid)
+            if smooth > 0:
+                v = gaussian_filter1d(v, smooth / self.dt, mode="nearest")
+            self.dense[n] = v
+        self.f = f
 
     def state(self, t):
         t = min(max(t, self.t0), self.t1)
-        return {n: float(f(t)) for n, f in self.f.items()}
+        i = (t - self.grid[0]) / self.dt; k = min(int(i), len(self.grid) - 2); a = i - k
+        return {n: float(v[k] * (1 - a) + v[k + 1] * a) for n, v in self.dense.items()}
 
     def matrix(self, t, extra_zoom=1.0, shake=(0.0, 0.0)):
         """3x3 homography: normalized mercator (x,y,1) -> screen px."""
@@ -69,3 +81,20 @@ class Camera:
         lat = unmerc(s["mx"], s["my"])[1]
         _, scale = self.matrix(t)
         return scale / (40075.016686 * max(0.05, math.cos(math.radians(lat))))
+
+
+def check_camera(cam, duration, fps=60, max_speed=40.0, max_accel=1.5):
+    """Analytic smoothness check: screen velocity (px/frame) of the map point under the screen centre.
+    Reference measured: peak ~37 px/frame @1080p, accel <= ~0.8 px/frame^2. Returns (ok, report, spikes)."""
+    ts = np.arange(0, duration, 1 / fps); P = []
+    c = np.array([cam.W / 2, cam.H / 2, 1.0])
+    for t in ts:
+        M, _ = cam.matrix(t); p = np.linalg.inv(M) @ c; P.append(p[:2] / p[2])
+    v = []
+    for i in range(1, len(ts)):
+        M, _ = cam.matrix(ts[i]); q = M @ np.array([*P[i - 1], 1]); v.append(q[:2] / q[2] - c[:2])
+    v = np.array(v); sp = np.hypot(v[:, 0], v[:, 1]); acc = np.hypot(*np.diff(v, axis=0).T)
+    spikes = [(round(float(ts[i + 1]), 2), round(float(acc[i]), 2)) for i in np.where(acc > max_accel)[0]]
+    ok = sp.max() <= max_speed and not spikes
+    rep = f"max speed {sp.max():.1f}px/f @ {ts[sp.argmax()]:.2f}s | max accel {acc.max():.2f}px/f2 @ {ts[acc.argmax() + 1]:.2f}s | spikes>{max_accel}: {len(spikes)}"
+    return ok, rep, spikes

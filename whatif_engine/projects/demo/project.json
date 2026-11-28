@@ -36,9 +36,9 @@
  "camera": [
   {
    "t": 0.0,
-   "lon": 158.8,
-   "lat": 47.4,
-   "width_km": 1300,
+   "lon": 159.6,
+   "lat": 47.1,
+   "width_km": 1150,
    "roll": -10,
    "tilt": 8
   },
@@ -131,34 +131,18 @@
    "tilt": 11
   },
   {
-   "t": 21.0,
-   "lon": 120,
-   "lat": 57,
-   "width_km": 8000,
-   "roll": 0,
-   "tilt": 11
-  },
-  {
-   "t": 22.5,
-   "lon": -112,
+   "t": 22.7,
+   "lon": -108,
    "lat": 45,
-   "width_km": 7500,
+   "width_km": 8200,
    "roll": 3,
    "tilt": 11
   },
   {
-   "t": 23.3,
-   "lon": -105,
-   "lat": 44,
-   "width_km": 7000,
-   "roll": 2,
-   "tilt": 11
-  },
-  {
-   "t": 24.4,
+   "t": 24.6,
    "lon": 95,
    "lat": 58,
-   "width_km": 5200,
+   "width_km": 5600,
    "roll": -3,
    "tilt": 10
   },
@@ -218,7 +202,7 @@
    ],
    "t_in": -1,
    "t_out": 15.2,
-   "size": 260,
+   "size": 340,
    "angle": -28,
    "map_scale": 0.75
   },
@@ -231,7 +215,7 @@
    ],
    "t_in": -1,
    "t_out": 15.2,
-   "size": 260,
+   "size": 340,
    "angle": -28,
    "map_scale": 0.75
   },
@@ -264,8 +248,8 @@
    "stagger": 0.07,
    "impact": true,
    "impact_out": 4.4,
-   "head_size": 46,
-   "width": 3.5
+   "head_size": 60,
+   "width": 4
   },
   {
    "type": "neon",
@@ -277,14 +261,14 @@
     760
    ],
    "color": "#06EBFF",
-   "size": 60,
+   "size": 84,
    "angle": -14,
    "persp": 0.22
   },
   {
    "type": "hero",
    "sprite": "rocket",
-   "size": 600,
+   "size": 800,
    "t_in": 7.55,
    "t_out": 10.45,
    "rise": 260,
@@ -293,15 +277,18 @@
    "mult_t": 7.95,
    "vlabel": "MISSILE-X",
    "vlabel_t": 8.4,
+   "vlabel_size": 76,
+   "mult_size": 120,
+   "mult_dx": 330,
    "pos": [
     430,
-    860
+    900
    ]
   },
   {
    "type": "hero",
    "sprite": "warhead_bus",
-   "size": 430,
+   "size": 760,
    "t_in": 10.55,
    "t_out": 13.55,
    "pos": [
@@ -311,7 +298,8 @@
    "rise": 0,
    "callout": {
     "text": "x 10 warheads",
-    "t": 11.9
+    "t": 11.9,
+    "size": 60
    }
   },
   {
@@ -341,8 +329,8 @@
    "n": 14,
    "t0": 16.5,
    "interval": 0.17,
-   "t1": 20.4,
-   "size": 96,
+   "t1": 19.4,
+   "size": 140,
    "seed": 4,
    "lat_range": [
     48,
@@ -351,28 +339,28 @@
   },
   {
    "type": "card",
-   "t_in": 19.6,
-   "t_out": 21.3,
+   "t_in": 19.5,
+   "t_out": 20.05,
    "pos": [
     560,
-    640
+    560
    ],
-   "size": 290,
+   "size": 330,
    "blink": true,
    "label": "WARNING"
   },
   {
    "type": "neon",
    "text": "TOTAL W#R",
-   "t_in": 20.1,
-   "t_out": 20.9,
+   "t_in": 20.15,
+   "t_out": 20.95,
    "pos": [
     560,
-    950
+    640
    ],
    "color": "#F5030A",
    "glow": "#B2413D",
-   "size": 58,
+   "size": 74,
    "weight": 800,
    "tracking": 0.08
   },
@@ -392,11 +380,11 @@
    "spread": 5,
    "bulge": -0.12,
    "stagger": 0.1,
-   "head_size": 48,
-   "width": 3.5,
+   "head_size": 64,
+   "width": 4,
    "impact": true,
    "impact_out": 23.8,
-   "impact_size": 80
+   "impact_size": 110
   },
   {
    "type": "sticker",
@@ -407,7 +395,7 @@
    ],
    "t_in": 24.7,
    "t_out": 27.4,
-   "size": 200,
+   "size": 300,
    "follow_roll": false
   },
   {
@@ -419,7 +407,7 @@
    ],
    "t_in": 24.85,
    "t_out": 27.4,
-   "size": 200,
+   "size": 300,
    "follow_roll": false
   },
   {
@@ -431,7 +419,7 @@
    ],
    "t_in": 25.0,
    "t_out": 27.4,
-   "size": 200,
+   "size": 300,
    "follow_roll": false
   },
   {
@@ -444,9 +432,9 @@
     640
    ],
    "color": "#FFDF0A",
-   "size": 52,
+   "size": 70,
    "wave": 0.06,
-   "tracking": 0.25
+   "tracking": 0.22
   },
   {
    "type": "tracked",
@@ -462,16 +450,18 @@
    "t0": 28.3,
    "dur": 4.4,
    "ease": "linear",
-   "size": 220,
+   "size": 430,
    "top": {
     "text": "RS-X HEAVY",
     "t": 28.8,
-    "size": 40
+    "size": 62,
+    "gap": 80
    },
    "bottom": {
     "text": "TITAN",
     "t": 29.6,
-    "size": 38
+    "size": 58,
+    "gap": 70
    },
    "drop_t": 31.2
   },
@@ -505,7 +495,7 @@
    "t0": 32.9,
    "interval": 0.08,
    "t1": 36.5,
-   "size": 70,
+   "size": 95,
    "seed": 7,
    "lat_range": [
     27,
@@ -521,7 +511,7 @@
    ],
    "t_in": 34.1,
    "t_out": 38.09,
-   "size": 200,
+   "size": 300,
    "follow_roll": false
   },
   {
@@ -534,7 +524,7 @@
    ],
    "t_in": 34.5,
    "t_out": 38.09,
-   "size": 210,
+   "size": 300,
    "wobble": 4,
    "follow_roll": false
   }

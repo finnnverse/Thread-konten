@@ -43,11 +43,11 @@
    "tilt": 8
   },
   {
-   "t": 0.3,
-   "lon": 157.5,
-   "lat": 47.6,
-   "width_km": 1650,
-   "roll": -9,
+   "t": 0.38,
+   "lon": 159.3,
+   "lat": 47.15,
+   "width_km": 1250,
+   "roll": -9.5,
    "tilt": 8
   },
   {
@@ -299,7 +299,7 @@
    "callout": {
     "text": "x 10 warheads",
     "t": 11.9,
-    "size": 60
+    "size": 82
    }
   },
   {
@@ -450,18 +450,18 @@
    "t0": 28.3,
    "dur": 4.4,
    "ease": "linear",
-   "size": 430,
+   "size": 560,
    "top": {
     "text": "RS-X HEAVY",
     "t": 28.8,
-    "size": 62,
-    "gap": 80
+    "size": 74,
+    "gap": 95
    },
    "bottom": {
     "text": "TITAN",
     "t": 29.6,
-    "size": 58,
-    "gap": 70
+    "size": 68,
+    "gap": 85
    },
    "drop_t": 31.2
   },

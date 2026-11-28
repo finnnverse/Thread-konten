@@ -266,43 +266,6 @@
    "persp": 0.22
   },
   {
-   "type": "hero",
-   "sprite": "rocket",
-   "size": 800,
-   "t_in": 7.55,
-   "t_out": 10.45,
-   "rise": 260,
-   "flame": true,
-   "mult": "x 24",
-   "mult_t": 7.95,
-   "vlabel": "MISSILE-X",
-   "vlabel_t": 8.4,
-   "vlabel_size": 76,
-   "mult_size": 120,
-   "mult_dx": 330,
-   "pos": [
-    430,
-    900
-   ]
-  },
-  {
-   "type": "hero",
-   "sprite": "warhead_bus",
-   "size": 760,
-   "t_in": 10.55,
-   "t_out": 13.55,
-   "pos": [
-    430,
-    900
-   ],
-   "rise": 0,
-   "callout": {
-    "text": "x 10 warheads",
-    "t": 11.9,
-    "size": 82
-   }
-  },
-  {
    "type": "trail",
    "from": [
     158.5,
@@ -601,6 +564,112 @@
    ],
    "dy": -190,
    "size": 38
+  },
+  {
+   "fx": "BigLabel",
+   "args": [
+    "x 24",
+    161.6,
+    49.6
+   ],
+   "t0": 7.75,
+   "t1": 10.4,
+   "angle": -10,
+   "size": 180
+  },
+  {
+   "fx": "LeaderLabel",
+   "args": [
+    "MISSILES PER SUB",
+    158.4,
+    46.9
+   ],
+   "t0": 8.1,
+   "t1": 10.4,
+   "h": 230,
+   "size": 38,
+   "dx": -40
+  },
+  {
+   "fx": "NeonArc",
+   "args": [
+    [
+     158.6,
+     47.4
+    ],
+    [
+     151.5,
+     50.0
+    ]
+   ],
+   "t0": 10.55,
+   "dur": 0.9,
+   "t1": 13.4,
+   "w": 7,
+   "bulge": 0.25
+  },
+  {
+   "fx": "NeonArc",
+   "args": [
+    [
+     158.6,
+     47.4
+    ],
+    [
+     153.5,
+     51.5
+    ]
+   ],
+   "t0": 10.7,
+   "dur": 0.9,
+   "t1": 13.4,
+   "w": 7,
+   "bulge": 0.2
+  },
+  {
+   "fx": "NeonArc",
+   "args": [
+    [
+     158.6,
+     47.4
+    ],
+    [
+     156.0,
+     52.6
+    ]
+   ],
+   "t0": 10.85,
+   "dur": 0.9,
+   "t1": 13.4,
+   "w": 7,
+   "bulge": 0.18
+  },
+  {
+   "fx": "Chip",
+   "args": [
+    "10 WARHEADS EACH"
+   ],
+   "t0": 11.9,
+   "t1": 13.5,
+   "lonlat": [
+    155.0,
+    50.5
+   ],
+   "dy": -150,
+   "size": 46
+  },
+  {
+   "fx": "BigLabel",
+   "args": [
+    "480",
+    156.5,
+    45.6
+   ],
+   "t0": 12.75,
+   "t1": 14.4,
+   "angle": -8,
+   "size": 150,
+   "col": "#ffd84a"
   },
   {
    "fx": "GridFinale",

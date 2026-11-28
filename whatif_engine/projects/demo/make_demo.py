@@ -49,10 +49,6 @@ spec = {
      "stagger": 0.07, "impact": True, "impact_out": 4.4, "head_size": 60, "width": 4},
     {"type": "neon", "text": "DEEP PATROL\nSUBMARINES", "t_in": 5.45, "t_out": 6.9, "pos": [560, 760], "color": "#06EBFF",
      "size": 84, "angle": -14, "persp": 0.22},
-    {"type": "hero", "sprite": "rocket", "size": 800, "t_in": 7.55, "t_out": 10.45, "rise": 260, "flame": True,
-     "mult": "x 24", "mult_t": 7.95, "vlabel": "MISSILE-X", "vlabel_t": 8.4, "vlabel_size": 76, "mult_size": 120, "mult_dx": 330, "pos": [430, 900]},
-    {"type": "hero", "sprite": "warhead_bus", "size": 760, "t_in": 10.55, "t_out": 13.55, "pos": [430, 900], "rise": 0,
-     "callout": {"text": "x 10 warheads", "t": 11.9, "size": 82}},
     {"type": "trail", "from": SUB, "to": [100, 58], "t0": 14.6, "dur": 1.8, "count": 7, "spread": 6, "to_spread": 2.2, "bulge": 0.2,
      "stagger": 0.09, "width": 5, "head_size": 70, "color": "#E8FBFF"},
     {"type": "bursts", "region": "RUS", "n": 14, "t0": 16.5, "interval": 0.17, "t1": 19.4, "size": 140, "seed": 4, "lat_range": [48, 66]},
@@ -83,6 +79,14 @@ spec["jfx"] = [
   {"fx": "BigLabel", "args": ["USA", -100, 40], "t0": 22.4, "t1": 23.9, "angle": -12, "size": 110},
   {"fx": "Cross", "args": [-92, 41], "t0": 34.7, "t1": 35.5, "size": 90},
   {"fx": "Chip", "args": ["DEFENSE: TOO SLOW"], "t0": 34.9, "t1": 35.6, "lonlat": [-100, 39], "dy": -190, "size": 38},
+  # replaces the old hero-object scenes (7.4-13.7 s): numbers stay ON the map, journey style
+  {"fx": "BigLabel", "args": ["x 24", 161.6, 49.6], "t0": 7.75, "t1": 10.4, "angle": -10, "size": 180},
+  {"fx": "LeaderLabel", "args": ["MISSILES PER SUB", 158.4, 46.9], "t0": 8.1, "t1": 10.4, "h": 230, "size": 38, "dx": -40},
+  {"fx": "NeonArc", "args": [[158.6, 47.4], [151.5, 50.0]], "t0": 10.55, "dur": 0.9, "t1": 13.4, "w": 7, "bulge": 0.25},
+  {"fx": "NeonArc", "args": [[158.6, 47.4], [153.5, 51.5]], "t0": 10.7, "dur": 0.9, "t1": 13.4, "w": 7, "bulge": 0.2},
+  {"fx": "NeonArc", "args": [[158.6, 47.4], [156.0, 52.6]], "t0": 10.85, "dur": 0.9, "t1": 13.4, "w": 7, "bulge": 0.18},
+  {"fx": "Chip", "args": ["10 WARHEADS EACH"], "t0": 11.9, "t1": 13.5, "lonlat": [155.0, 50.5], "dy": -150, "size": 46},
+  {"fx": "BigLabel", "args": ["480", 156.5, 45.6], "t0": 12.75, "t1": 14.4, "angle": -8, "size": 150, "col": "#ffd84a"},
   {"fx": "GridFinale", "args": [35.6], "text": "30 MIN", "t_text": 36.1, "bg": "blur"}
 ]
 json.dump(spec, open(os.path.join(D, "project.json"), "w"), indent=1)

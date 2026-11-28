@@ -14,6 +14,8 @@ from .camera import Camera
 from .maprender import MapRenderer, ring_mask, apply_opaque_fill, apply_tint_fill, hex2rgb
 from .text import draw_caption, chunk_words, blit, blit_sub, font, hexa, pil_to_rgba
 from . import sprites as SP
+from . import journey_fx as J
+from PIL import Image
 from .fx import (NeonLabel, static_glow_text, bezier, draw_trail, GlowLayer, streak_rain, glitch,
                  pop_scale, ease_io, ease_in, ease_out, clamp01)
 
@@ -33,6 +35,38 @@ def expand_camera(spec, tracked):
         else:
             keys.append(k)
     return keys
+
+
+JFX_CLASSES = {n: getattr(J, n) for n in ["HL", "Tint", "NeonArc", "NeonLine", "BigLabel", "LeaderLabel", "Pin", "Walker",
+                                           "Check", "Snow", "IceCube", "FreezeSea", "IceBridge", "SocialBadge", "RouteGlow",
+                                           "GridFinale", "Chip", "Cross"]}
+JFX_CLASSES["Finale"] = J.GridFinale
+
+
+def build_jfx(items, countries):
+    """project.json "jfx": [{"fx": "HL", "args": [{"geom": "ZAF"}, 2.1], "col": "gold", ...}, ...]
+    Any value {"geom": "RUS"} / {"geom": ["MEX","USA"]} / {"geom": "USA", "exclude_bbox": [...]} becomes
+    Natural Earth lon/lat rings; lists like [lon, lat] stay as tuples."""
+    def res(v):
+        if isinstance(v, dict) and "geom" in v:
+            codes = v["geom"] if isinstance(v["geom"], list) else [v["geom"]]
+            out = []
+            for c in codes:
+                for r in countries.rings(c, tuple(v["exclude_bbox"]) if v.get("exclude_bbox") else None):
+                    if not r["hole"] and (v.get("min_lat") is None or r["lat"].mean() >= v["min_lat"]):
+                        out.append(list(zip(r["lon"].tolist(), r["lat"].tolist())))
+            return out
+        if isinstance(v, list) and len(v) == 2 and all(isinstance(x, (int, float)) for x in v):
+            return tuple(v)
+        if isinstance(v, list):
+            return [res(x) for x in v]
+        return v
+    objs = []
+    for it in items or []:
+        it = dict(it); cls = JFX_CLASSES[it.pop("fx")]; args = [res(a) for a in it.pop("args", [])]
+        it.pop("sfx", None)
+        objs.append(cls(*args, **{k: res(v) for k, v in it.items()}))
+    return objs
 
 
 def random_points_in(rings, n, seed, lat_range=None):
@@ -128,6 +162,7 @@ class Engine:
                 rings = self.C.rings(e["region"], tuple(e["exclude_bbox"]) if e.get("exclude_bbox") else None)
                 e["points"] = random_points_in(rings, e["n"], e.get("seed", 1), e.get("lat_range"))
         self.glow = GlowLayer(self.W, self.H)
+        self.jfx = build_jfx(spec.get("jfx"), self.C)
 
     # ---------------------------------------------------------------- tiles
     def prefetch(self, t0, t1):
@@ -211,6 +246,12 @@ class Engine:
         img = self.glow.composite(img, bloom=0.55)
         for e in late:
             self._tracked(img, e, t, M, clon)
+        if self.jfx:
+            P = lambda lon, lat: self.g2s(t, lon, lat)
+            pil = Image.fromarray((np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8)).convert("RGBA")
+            pil = J.draw_all(pil, self.jfx, t, P)
+            pil = J.post_all(pil, self.jfx, t)
+            img = np.asarray(pil.convert("RGB")).astype(np.float32) / 255.0
         for e, L in self.neons:
             L.draw(img, t, self.cam)
         for e in self.elements:

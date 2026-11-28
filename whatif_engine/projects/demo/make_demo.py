@@ -75,5 +75,15 @@ spec = {
      "size": 300, "wobble": 4, "follow_roll": False}
   ]
 }
+# journey_fx animations (map-journey-style) combined with the reference-style elements
+spec["jfx"] = [
+  {"fx": "LeaderLabel", "args": ["PACIFIC OCEAN", 167, 41], "t0": 0.55, "t1": 1.5, "h": 110, "size": 28},
+  {"fx": "BigLabel", "args": ["RUSSIA", 96, 63], "t0": 2.3, "t1": 3.5, "angle": -10, "size": 96},
+  {"fx": "LeaderLabel", "args": ["ALASKA", -151, 64], "t0": 29.4, "t1": 31.0, "h": 120, "size": 30},
+  {"fx": "BigLabel", "args": ["USA", -100, 40], "t0": 22.4, "t1": 23.9, "angle": -12, "size": 110},
+  {"fx": "Cross", "args": [-92, 41], "t0": 34.7, "t1": 35.5, "size": 90},
+  {"fx": "Chip", "args": ["DEFENSE: TOO SLOW"], "t0": 34.9, "t1": 35.6, "lonlat": [-100, 39], "dy": -190, "size": 38},
+  {"fx": "GridFinale", "args": [35.6], "text": "30 MIN", "t_text": 36.1, "bg": "blur"}
+]
 json.dump(spec, open(os.path.join(D, "project.json"), "w"), indent=1)
 print("duration", dur, "words", len(W))

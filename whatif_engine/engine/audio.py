@@ -97,14 +97,115 @@ def shimmer(dur=0.6, rng=None):
     return np.stack([y * 0.8, y], 1)
 
 
+
+# ----------------------------------------------------------------------------- journey SFX (from map-journey-style)
+def _env(n, a=0.005, r=0.2):
+    t = np.arange(n) / SR; return np.minimum(1, t / max(a, 1e-4)) * np.exp(-t / max(r, 1e-4))
+
+
+def _hp_fft(x, cut):
+    X = np.fft.rfft(x); f = np.fft.rfftfreq(len(x), 1 / SR); X *= (f / cut) ** 2 / np.sqrt(1 + (f / cut) ** 4); return np.fft.irfft(X, len(x))
+
+
+def _lp_fft(x, cut):
+    X = np.fft.rfft(x); f = np.fft.rfftfreq(len(x), 1 / SR); X *= 1 / np.sqrt(1 + (f / cut) ** 4); return np.fft.irfft(X, len(x))
+
+
+def _st(y, pan=0.0):
+    return np.stack([y * (1 - pan) , y * (1 + pan)], 1).astype(np.float32) * 0.7
+
+
+def j_pop(freq=880):
+    n = int(0.18 * SR); t = np.arange(n) / SR
+    return _st((np.sin(2 * np.pi * freq * t) * 0.7 + np.sin(2 * np.pi * freq * 2 * t) * 0.2) * _env(n, 0.002, 0.05))
+
+
+def j_pluck(freq=659.25):
+    n = int(0.5 * SR); t = np.arange(n) / SR
+    return _st(sum(np.sin(2 * np.pi * freq * k * t) / k ** 1.6 for k in range(1, 6)) * _env(n, 0.003, 0.14))
+
+
+def j_ding(freq=1320):
+    n = int(1.0 * SR); t = np.arange(n) / SR
+    s = np.sin(2 * np.pi * freq * t) + 0.4 * np.sin(2 * np.pi * freq * 2.76 * t) + 0.2 * np.sin(2 * np.pi * freq * 5.4 * t)
+    return _st(s * _env(n, 0.002, 0.35) * 0.6)
+
+
+def j_horn(f1=311, f2=392, dur=0.9):
+    n = int(dur * SR); t = np.arange(n) / SR; saw = lambda f: 2 * ((t * f) % 1) - 1
+    s = _lp_fft(saw(f1) + saw(f2) + 0.5 * saw(f1 * 2), 1800)
+    return _st(s * np.minimum(1, t / 0.05) * np.minimum(1, (dur - t) / 0.15) * 0.25)
+
+
+def j_clank(rng=None):
+    rng = rng or np.random.default_rng(3); n = int(0.6 * SR); t = np.arange(n) / SR
+    s = sum(np.sin(2 * np.pi * f * t) * a for f, a in [(220, 1), (571, .7), (1130, .5), (2340, .3)])
+    return _st((s * _env(n, 0.001, 0.12) + rng.standard_normal(n) * _env(n, 0.001, 0.02) * 0.6) * 0.5)
+
+
+def j_hiss(dur=0.5, rng=None):
+    rng = rng or np.random.default_rng(4); n = int(dur * SR)
+    return _st(_hp_fft(rng.standard_normal(n), 2500) * np.sin(np.pi * np.linspace(0, 1, n)) * 0.25, 0.2)
+
+
+def j_riser(dur=1.0, rng=None):
+    rng = rng or np.random.default_rng(5); n = int(dur * SR); t = np.arange(n) / SR
+    f = 200 + 1400 * (t / dur) ** 2
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.3 + _hp_fft(rng.standard_normal(n), 2000) * 0.15 * (t / dur)
+    return _st(s * (t / dur) ** 1.5)
+
+
+def j_impact():
+    n = int(1.6 * SR); t = np.arange(n) / SR
+    boom_ = np.sin(2 * np.pi * (55 + 40 * np.exp(-t * 12)) * t) * _env(n, 0.002, 0.45)
+    sh = sum(np.sin(2 * np.pi * f * t) for f in (1568, 1976, 2349, 3136)) * _env(n, 0.003, 0.6) * 0.15
+    return _st(boom_ * 0.9 + sh)
+
+
+def j_thud():
+    n = int(0.5 * SR); t = np.arange(n) / SR
+    return _st(np.sin(2 * np.pi * (90 + 60 * np.exp(-t * 20)) * t) * _env(n, 0.002, 0.12)
+               + np.sign(np.sin(2 * np.pi * 110 * t)) * _env(n, 0.002, 0.08) * 0.15)
+
+
+def j_boing():
+    n = int(0.45 * SR); t = np.arange(n) / SR
+    f = 300 + 500 * np.exp(-t * 8) * (1 + 0.3 * np.sin(2 * np.pi * 14 * t))
+    return _st(np.sin(2 * np.pi * np.cumsum(f) / SR) * _env(n, 0.003, 0.15) * 0.6)
+
+
+PENTA = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5]
+
 # ----------------------------------------------------------------------------- events from project
-def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6):
-    """SFX plan. Whoosh is reserved for the BIG moments only (largest camera whips / first launch),
-    spaced >= whoosh_gap s apart and capped per minute, so it never becomes a constant wind noise.
-    Other SFX are sparse accents."""
+# which SFX each animation type gets (several options -> rotated so nothing repeats back to back)
+SFX_MAP = {
+    "card": [("alarm", 0.15, -16)],
+    "neon": [("shimmer", 0.0, -20), ("hiss", 0.0, -20), ("riser_s", -0.35, -21)],
+    "hero": [("hiss", -0.15, -19), ("riser_s", -0.4, -21)],
+    "sticker": [("pop", 0.0, -19), ("jpop", 0.0, -20)],
+    "bubble": [("boing", 0.05, -18)],
+    "bursts": [("thud", 0.0, -14), ("impact_s", 0.0, -17)],
+    "trail_impact": [("thud", 0.0, -15)],
+    "rain": [("hiss", 0.0, -18)],
+    "HL": [("pluck", 0.0, -17)], "Tint": [("pluck", 0.0, -18)],
+    "Pin": [("ding", 0.0, -21)], "Check": [("ding_hi", 0.0, -18)], "Cross": [("thud", 0.0, -13)],
+    "BigLabel": [("jpop", 0.0, -19), ("hiss", 0.0, -20)], "LeaderLabel": [("jpop", 0.0, -22)], "Chip": [("jpop", 0.0, -19)],
+    "NeonArc": [("hiss", 0.0, -20)], "NeonLine": [("hiss", 0.0, -21)], "RouteGlow": [("riser_s", 0.0, -20)],
+    "IceCube": [("clank", 0.0, -20)], "Snow": [("shimmer", 0.0, -22)], "FreezeSea": [("hiss", 0.0, -19)],
+    "IceBridge": [("clank", 0.0, -19)], "SocialBadge": [("boing", 0.0, -19)], "Walker": [],
+}
+
+
+def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6, same_gap=1.2, min_gap=0.35):
+    """SFX plan with variety:
+      - whoosh only on the biggest camera whips / tracked launches (>= whoosh_gap apart, capped per minute)
+      - every animation type maps to a few candidate SFX (SFX_MAP); candidates rotate, plucks walk a
+        pentatonic scale, the same SFX never plays twice within `same_gap` s and no two accents within
+        `min_gap` s (lower priority one is dropped) -> no 'itu-itu saja' feeling
+      - spec["sfx"] = extra manual events [[name, t, dB], ...]; any element/jfx can set "sfx": false."""
     ev = [("boom", 0.0, -8)]
-    cand = []                                                  # (priority, t)
-    if cam is not None:                                        # camera whip strength
+    cand = []
+    if cam is not None:
         ts = np.arange(cam.t0, cam.t1, 1 / 30); sp = []
         for t in ts:
             a, b = cam.state(t), cam.state(t + 1 / 30)
@@ -117,25 +218,62 @@ def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6):
         if e["type"] == "tracked":
             cand.append((5.0, e["t0"] - 0.1))
     cand.sort(reverse=True)
-    limit = max(1, int(round(max_whoosh_per_min * spec.get("duration", 60) / 60)))
-    chosen = []
+    limit = max(1, int(round(max_whoosh_per_min * spec.get("duration", 60) / 60))); chosen = []
     for pr, t in cand:
-        if len(chosen) >= limit:
-            break
-        if all(abs(t - c) >= whoosh_gap for c in chosen):
+        if len(chosen) < limit and all(abs(t - c) >= whoosh_gap for c in chosen):
             chosen.append(t)
     ev += [("whoosh", t, -16) for t in sorted(chosen)]
+
+    acc = []                                                   # (t, kind, priority)
     for e in spec.get("elements", []):
+        if e.get("sfx") is False:
+            continue
         ty = e["type"]
-        if ty == "card":
-            ev.append(("alarm", e["t_in"] + 0.15, -16))
-        elif ty == "neon" and e.get("sfx", True):
-            ev.append(("shimmer", e["t_in"], -20))
-    # one soft pop per group of stickers appearing together (not one per sticker)
-    last = -9
-    for t in sorted(e["t_in"] for e in spec.get("elements", []) if e["type"] == "sticker" and e.get("t_in", -1) > 0):
-        if t - last > 1.5:
-            ev.append(("pop", t, -19)); last = t
+        if ty == "card": acc.append((e["t_in"], "card", 3))
+        elif ty == "neon": acc.append((e["t_in"], "neon", 2))
+        elif ty == "hero": acc.append((e["t_in"], "hero", 2))
+        elif ty == "sticker" and e.get("t_in", -1) > 0: acc.append((e["t_in"], "bubble" if e.get("sprite") == "bubble" else "sticker", 1))
+        elif ty == "bursts": acc.append((e["t0"], "bursts", 2))
+        elif ty == "rain": acc.append((e["t0"], "rain", 1))
+        elif ty == "trail" and e.get("impact"): acc.append((e["t0"] + e.get("dur", 1.3), "trail_impact", 1))
+    for it in spec.get("jfx", []) or []:
+        if it.get("sfx") is False:
+            continue
+        fx = it["fx"]; t0 = it.get("t0")
+        if t0 is None:
+            args = it.get("args", []); t0 = next((a for a in args[1:] if isinstance(a, (int, float))), None)
+            if fx in ("BigLabel", "LeaderLabel", "Pin", "IceCube", "Cross") and len(args) >= 4: t0 = args[3] if fx not in ("Pin", "IceCube", "Cross") else args[2]
+            if fx in ("NeonArc", "NeonLine", "IceBridge") and len(args) >= 3: t0 = args[2]
+            if fx in ("Snow", "GridFinale", "Finale") and args: t0 = args[0]
+            if fx in ("Check",) and len(args) >= 3: t0 = args[2]
+        if t0 is None:
+            continue
+        if fx in ("GridFinale", "Finale"):
+            tt = it.get("t_text", t0 + 0.7)
+            ev.append(("riser", tt - 1.0, -16)); ev.append(("impact", tt, -11)); continue
+        acc.append((float(t0), fx, 2 if fx in ("HL", "Tint", "Check", "Cross") else 1))
+    acc.sort()
+    rot = {}; last_by = {}; last_any = -9; pk = 0; out = []
+    for t, kind, pr in acc:
+        opts = SFX_MAP.get(kind, [])
+        if not opts:
+            continue
+        k = rot.get(kind, 0); rot[kind] = k + 1
+        for j in range(len(opts)):                             # pick an option not used in the last same_gap s
+            name, off, gdb = opts[(k + j) % len(opts)]
+            if t - last_by.get(name, -9) >= same_gap:
+                break
+        else:
+            continue
+        if t - last_any < min_gap and out and out[-1][3] >= pr:
+            continue
+        if t - last_any < min_gap and out:
+            out.pop()
+        if name == "pluck":
+            name = f"pluck{pk % len(PENTA)}"; pk += 1
+        out.append((name, t + off, gdb, pr)); last_by[opts[(k + j) % len(opts)][0]] = t; last_any = t
+    ev += [(n, t, g) for n, t, g, _ in out]
+    ev += [tuple(x) for x in spec.get("sfx", [])]
     return ev
 
 
@@ -171,7 +309,13 @@ def build_mix(duration, events, vo_path=None, out_wav="mix.wav", music_db=-18, s
         m *= g[:, None]
     sfx = np.zeros((n, 2), np.float32)
     lib = {"whoosh": lambda: whoosh(rng.uniform(0.8, 1.3), rng), "alarm": alarm, "boom": lambda: boom(rng=rng),
-           "pop": lambda: pop(rng, rng.uniform(450, 650)), "shimmer": lambda: shimmer(rng=rng)}
+           "pop": lambda: pop(rng, rng.uniform(450, 650)), "shimmer": lambda: shimmer(rng=rng),
+           "jpop": lambda: j_pop(rng.choice([880, 990, 1175])), "ding": lambda: j_ding(1320), "ding_hi": lambda: j_ding(1760),
+           "horn": j_horn, "ship_horn": lambda: j_horn(147, 185, 1.2), "clank": lambda: j_clank(rng), "hiss": lambda: j_hiss(0.5, rng),
+           "riser": lambda: j_riser(1.0, rng), "riser_s": lambda: j_riser(0.45, rng), "impact": j_impact,
+           "impact_s": lambda: j_impact() * 0.6, "thud": j_thud, "boing": j_boing}
+    for i, f in enumerate(PENTA):
+        lib[f"pluck{i}"] = (lambda f=f: j_pluck(f))
     for name, t, gdb in events:
         x = lib[name](); x = x / max(1e-4, np.abs(x).max()) * 0.5
         _place(sfx, x, t, gdb)

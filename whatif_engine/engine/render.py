@@ -414,7 +414,7 @@ class Engine:
         al = 1.0
         if e.get("blink"):
             ph = ((t - e["t_in"] - 0.5) / e.get("blink_period", 0.5)) % 1.0
-            al = 1.0 if ph < 0.6 or t < e["t_in"] + 0.5 else 0.45
+            al = 1.0 if ph < 0.6 or t < e["t_in"] + 0.5 else 0.72
         x, y = e.get("pos", [540, 650])
         blit_sub(img, glitch(spr, g, int(t * 30)) if g > 0 else spr, x, y, scale=s, alpha=al)
 

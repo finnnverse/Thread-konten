@@ -201,7 +201,7 @@ def hud_card(width=300, frame="#FF6A3A", icon="#FF2A2A", label="WARNING"):
     """sci-fi warning card: frame + hatched header + triangle '!' + label."""
     S = SS; W = width * S; H = int(W * 1.32); im = Image.new("RGBA", (W, H)); d = ImageDraw.Draw(im)
     lw = int(W * 0.025)
-    d.rounded_rectangle([lw, lw, W - lw, H - lw], radius=int(W * 0.08), fill=hexa("#2A1410", 150), outline=hexa(frame), width=lw)
+    d.rounded_rectangle([lw, lw, W - lw, H - lw], radius=int(W * 0.08), fill=hexa("#2A1410", 215), outline=hexa(frame), width=lw)
     d.rounded_rectangle([W * 0.1, H * 0.06, W * 0.9, H * 0.19], radius=int(W * 0.03), outline=hexa(frame), width=lw // 2)
     for k in range(12):
         x = W * (0.13 + k * 0.065); d.line([x, H * 0.17, x + W * 0.05, H * 0.08], fill=hexa(frame), width=lw // 2)

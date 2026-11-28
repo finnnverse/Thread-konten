@@ -83,9 +83,7 @@ def map_backdrop(W, H, lon_c=55, lat_c=28, width_km=19000):
     img = mr.base(M, s)
     pil = Image.fromarray((img * 255).astype(np.uint8)).convert("RGBA")
     P = lambda lo, la: tuple(float(v[0]) for v in cam.geo_to_screen(0, lo, la))
-    fx = [J.NeonArc((56.4, 26.5), (121.5, 31.2), 0, dur=0.01, bulge=0.22, w=7),
-          J.NeonArc((56.4, 26.5), (-74, 40.7), 0, dur=0.01, bulge=-0.15, w=7, col="#ffd84a"),
-          J.NeonArc((32.5, 30.0), (4.5, 51.9), 0, dur=0.01, bulge=0.2, w=6, col="#9eeb25")]
+    fx = []                                   # clean backdrop: nothing crosses the title band
     pil = J.draw_all(pil, fx, 5.0, P)
     return np.asarray(pil.convert("RGB")).astype(np.float32) / 255
 
@@ -126,18 +124,32 @@ def scrim(img, cx, cy, w, h, strength=0.72, blur=18):
     return img * (1 - m) + bl * (1 - strength) * m
 
 
-def title_block(img, cx, cy, scale):
-    t1 = outlined_text(NAME.upper(), int(150 * scale), "#FFFFFF", max(4, int(7 * scale)), glow_hex="#06EBFF")
-    blit_sub(img, t1, cx, cy - 42 * scale)
-    t2 = outlined_text(TAG, int(62 * scale), "#FFDF0A", max(3, int(5 * scale)), family="jost", weight=700, tracking=0.01)
-    blit_sub(img, t2, cx, cy + 100 * scale)
+def _ink(spr):
+    """tight bbox of the visible glyphs (fill+outline, not the soft glow) -> (x0,y0,x1,y1)"""
+    ys, xs = np.nonzero(spr[..., 3] > 0.6)
+    return xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+
+
+def title_block(img, cx, cy, scale, gap=34):
+    """title + tagline as ONE block, centred exactly on (cx, cy) by their real ink bounds."""
+    t1 = outlined_text(NAME.upper(), int(150 * scale), "#FFFFFF", max(4, int(7 * scale)), glow_hex="#06EBFF", tracking=0.0)
+    t2 = outlined_text(TAG, int(62 * scale), "#FFDF0A", max(3, int(5 * scale)), family="jost", weight=700, tracking=0.0)
+    b1, b2 = _ink(t1), _ink(t2)
+    h1, h2 = b1[3] - b1[1], b2[3] - b2[1]
+    top = cy - (h1 + gap * scale + h2) / 2
+    # place so that each sprite's ink centre lands on the target point
+    for spr, b, y_ink_top in ((t1, b1, top), (t2, b2, top + h1 + gap * scale)):
+        ink_cx = (b[0] + b[2]) / 2; ink_cy = (b[1] + b[3]) / 2
+        dx = spr.shape[1] / 2 - ink_cx; dy = spr.shape[0] / 2 - ink_cy
+        blit_sub(img, spr, cx + dx, y_ink_top + (b[3] - b[1]) / 2 + dy)
+    return top, top + h1 + gap * scale + h2
 
 
 # YouTube banner 2560x1440, everything important inside central 1235x338 (strictest safe area)
 W, H = 2560, 1440
 yb = map_backdrop(W, H)
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-yb = scrim(yb, W / 2, H / 2 + 10, 1500, 430)
+yb = scrim(yb, W / 2, H / 2, 1500, 430)
 title_block(yb, W / 2, H / 2, 0.86)
 save(yb, "youtube_banner_2560x1440.jpg")
 guide = (np.clip(yb, 0, 1) * 255).astype(np.uint8).copy()
@@ -149,6 +161,6 @@ Image.fromarray(guide).resize((1280, 720)).save(os.path.join(OUT, "cek_zona_aman
 W, H = 1702, 630
 fb = map_backdrop(W, H, lon_c=60, lat_c=30, width_km=17000)
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-fb = scrim(fb, W * 0.56, H * 0.46, 1250, 360)
-title_block(fb, W * 0.56, H * 0.45, 0.8)
+fb = scrim(fb, W * 0.56, H * 0.47, 1250, 360)
+title_block(fb, W * 0.56, H * 0.47, 0.8)
 save(fb, "facebook_cover_1702x630.jpg")

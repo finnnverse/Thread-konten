@@ -174,6 +174,17 @@ def j_boing():
     return _st(np.sin(2 * np.pi * np.cumsum(f) / SR) * _env(n, 0.003, 0.15) * 0.6)
 
 
+def j_tick(freq=2400):
+    """short UI click for small labels"""
+    n = int(0.06 * SR); t = np.arange(n) / SR
+    return _st((np.sin(2 * np.pi * freq * t) * 0.6 + np.sin(2 * np.pi * freq * 1.5 * t) * 0.3) * _env(n, 0.0005, 0.012))
+
+
+def j_soft_ding(freq=1568):
+    n = int(0.6 * SR); t = np.arange(n) / SR
+    return _st((np.sin(2 * np.pi * freq * t) + 0.25 * np.sin(2 * np.pi * freq * 2.0 * t)) * _env(n, 0.004, 0.18) * 0.5)
+
+
 PENTA = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5]
 
 # ----------------------------------------------------------------------------- events from project
@@ -189,14 +200,15 @@ SFX_MAP = {
     "rain": [("hiss", 0.0, -18)],
     "HL": [("pluck", 0.0, -17)], "Tint": [("pluck", 0.0, -18)],
     "Pin": [("ding", 0.0, -21)], "Check": [("ding_hi", 0.0, -18)], "Cross": [("thud", 0.0, -13)],
-    "BigLabel": [("jpop", 0.0, -19), ("hiss", 0.0, -20)], "LeaderLabel": [("jpop", 0.0, -22)], "Chip": [("jpop", 0.0, -19)],
+    "BigLabel": [("jpop", 0.0, -19), ("soft_ding", 0.0, -21), ("hiss", 0.0, -20)],
+    "LeaderLabel": [("tick", 0.0, -20), ("tick_lo", 0.0, -20)], "Chip": [("soft_ding", 0.0, -20), ("tick", 0.0, -19)],
     "NeonArc": [("hiss", 0.0, -20)], "NeonLine": [("hiss", 0.0, -21)], "RouteGlow": [("riser_s", 0.0, -20)],
     "IceCube": [("clank", 0.0, -20)], "Snow": [("shimmer", 0.0, -22)], "FreezeSea": [("hiss", 0.0, -19)],
     "IceBridge": [("clank", 0.0, -19)], "SocialBadge": [("boing", 0.0, -19)], "Walker": [],
 }
 
 
-def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6, same_gap=1.2, min_gap=0.35):
+def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6, same_gap=1.2, min_gap=0.6, max_same_8s=2):
     """SFX plan with variety:
       - whoosh only on the biggest camera whips / tracked launches (>= whoosh_gap apart, capped per minute)
       - every animation type maps to a few candidate SFX (SFX_MAP); candidates rotate, plucks walk a
@@ -261,7 +273,8 @@ def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6, sa
         k = rot.get(kind, 0); rot[kind] = k + 1
         for j in range(len(opts)):                             # pick an option not used in the last same_gap s
             name, off, gdb = opts[(k + j) % len(opts)]
-            if t - last_by.get(name, -9) >= same_gap:
+            recent = sum(1 for o in out if o[0].rstrip("0123456789") == name and t - o[1] < 8.0)
+            if t - last_by.get(name, -9) >= same_gap and recent < max_same_8s:
                 break
         else:
             continue
@@ -313,7 +326,8 @@ def build_mix(duration, events, vo_path=None, out_wav="mix.wav", music_db=-18, s
            "jpop": lambda: j_pop(rng.choice([880, 990, 1175])), "ding": lambda: j_ding(1320), "ding_hi": lambda: j_ding(1760),
            "horn": j_horn, "ship_horn": lambda: j_horn(147, 185, 1.2), "clank": lambda: j_clank(rng), "hiss": lambda: j_hiss(0.5, rng),
            "riser": lambda: j_riser(1.0, rng), "riser_s": lambda: j_riser(0.45, rng), "impact": j_impact,
-           "impact_s": lambda: j_impact() * 0.6, "thud": j_thud, "boing": j_boing}
+           "impact_s": lambda: j_impact() * 0.6, "thud": j_thud, "boing": j_boing,
+           "tick": lambda: j_tick(2400), "tick_lo": lambda: j_tick(1500), "soft_ding": lambda: j_soft_ding(rng.choice([1568, 1760, 1319]))}
     for i, f in enumerate(PENTA):
         lib[f"pluck{i}"] = (lambda f=f: j_pluck(f))
     for name, t, gdb in events:

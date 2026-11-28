@@ -69,7 +69,7 @@ def destreak(rgb_u8, lat, px_per_km, strength=1.0, debug=False):
     return (out, m, ang) if debug else out
 
 
-def deband(img, ang, px_per_km, length_km=500, max_gain=0.18):
+def deband(img, ang, px_per_km, length_km=500, max_gain=0.12):
     h, w = img.shape[:2]
     small = cv2.resize(img, (w // 4, h // 4), interpolation=cv2.INTER_AREA)
     gain = _deband_gain(small, ang, px_per_km / 4, length_km, max_gain)
@@ -92,7 +92,9 @@ def _deband_gain(img, ang, px_per_km, length_km, max_gain):
     band = num_a / np.maximum(den_a, 1e-3) - num_i / np.maximum(den_i, 1e-3)
     band = np.clip(band, -max_gain, max_gain) * np.clip(den_a / 0.6, 0, 1)
     band = cv2.GaussianBlur(band, (0, 0), max(1.0, 1.5 * px_per_km))
-    return (np.exp(-band) * wland + (1 - wland)).astype(np.float32)
+    bright = np.clip((img.mean(2) - 0.38) / 0.15, 0, 1)                   # deserts/snow: no haze bands -> leave alone
+    wl = wland * (1 - bright)
+    return (np.exp(-band) * wl + (1 - wl)).astype(np.float32)
 
 
 class CleanTiles:
@@ -123,7 +125,9 @@ class CleanTiles:
                 x, y = bx * B + i, by * B + j
                 if 0 <= y < n:
                     p = self._p(z, x % n, y); os.makedirs(os.path.dirname(p), exist_ok=True)
-                    Image.fromarray(clean[(j + 1) * 256:(j + 2) * 256, (i + 1) * 256:(i + 2) * 256]).save(p, compress_level=1)
+                    tmp = f"{p}.{os.getpid()}.tmp.png"
+                    Image.fromarray(clean[(j + 1) * 256:(j + 2) * 256, (i + 1) * 256:(i + 2) * 256]).save(tmp, compress_level=1)
+                    os.replace(tmp, p)                                   # atomic: readers never see half files
 
     def _remove_sea_ice(self, img, z, x0, y0):
         from .geo import merc
@@ -164,7 +168,11 @@ class CleanTiles:
         p = self._p(z, x, y)
         if not os.path.exists(p):
             self._build_block(z, x // self.block, y // self.block)
-        a = np.asarray(Image.open(p).convert("RGB"))
+        try:
+            a = np.asarray(Image.open(p).convert("RGB"))
+        except Exception:                                                # corrupt/partial -> rebuild once
+            self._build_block(z, x // self.block, y // self.block)
+            a = np.asarray(Image.open(p).convert("RGB"))
         if len(self.mem) > 6000:
             self.mem.clear()
         self.mem[k] = a

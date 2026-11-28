@@ -627,6 +627,8 @@ class Walker(FX):
         if t < self.t0 - 0.0001 and not self.done:
             return img
         a = life(t, self.t0 - 0.2, self.t1, 0.2)
+        if self.t1 is not None and t > self.t1 and a <= 0.01:      # [whatif_engine] trail fades out with t1
+            return img
         s = S(img)
         lay = Image.new('RGBA', img.size, (0, 0, 0, 0)); d = ImageDraw.Draw(lay)
         wpx = max(1, int(self.w * s))
@@ -651,6 +653,8 @@ class Walker(FX):
                 d.line(trail, fill=hexrgb(self.col), width=wpx, joint='curve')
         sh = Image.new('RGBA', img.size, (0, 0, 0, 0))
         sh.paste((0, 0, 0, 110), mask=lay.split()[3].filter(ImageFilter.GaussianBlur(2 * s)))
+        if self.t1 is not None and t > self.t1:
+            sh = with_alpha(sh, a); lay = with_alpha(lay, a)
         img = over(img, sh); img = over(img, lay)
         if self.icon <= 0:
             return img

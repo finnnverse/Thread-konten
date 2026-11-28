@@ -90,7 +90,8 @@ class LutGrade:
         o = cv2.LUT(u8, self.lo).astype(np.float32); l = cv2.LUT(u8, self.ll).astype(np.float32)
         f = u8.astype(np.float32)
         R, G, B = f[..., 0], f[..., 1], f[..., 2]
-        w = np.clip((B - R - 4) / 12.0, 0, 1) * np.clip((150 - f.max(2)) / 40.0, 0, 1)
+        # water: clearly bluer than green (navy 20,37,61); dark forest has G~B and must stay land
+        w = np.clip((B - G - 6) / 10.0, 0, 1) * np.clip((B - R - 8) / 12.0, 0, 1) * np.clip((150 - f.max(2)) / 40.0, 0, 1)
         out = (o * w[..., None] + l * (1 - w[..., None]))
         if self.strength != 1.0:
             out = f + (out - f) * self.strength

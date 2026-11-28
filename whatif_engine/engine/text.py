@@ -75,6 +75,7 @@ class CaptionStyle:
     """Measured: Manrope wght 700, 47.5 px @720p -> 71 px @1080p; fill #FCFFFF; dark outline ~2.25 px
     @55% opacity, no drop-shadow offset, no box; centre x 0.505*W, baseline 0.815*H; hard cuts."""
     size = 71; weight = 700; fill = "#FCFFFF"; stroke = 2; stroke_alpha = 0.55
+    shadow_alpha = 0.45; shadow_blur = 7      # legibility on bright desert/snow (not in reference; set 0 to disable)
     cx = 0.505; baseline = 0.815; max_w = 0.84
 
 
@@ -85,14 +86,18 @@ def caption_sprite(text, W=1080, style=CaptionStyle):
     while f.getlength(text) > style.max_w * W and sz > 40:
         sz -= 2; f = font("manrope", sz, style.weight)
     asc, desc = f.getmetrics()
-    tw = int(f.getlength(text)) + 20; th = asc + desc + 20
-    stroke = Image.new("L", (tw, th)); ImageDraw.Draw(stroke).text((10, 10), text, font=f, fill=255, stroke_width=style.stroke, stroke_fill=255)
-    body = Image.new("L", (tw, th)); ImageDraw.Draw(body).text((10, 10), text, font=f, fill=255)
+    tw = int(f.getlength(text)) + 60; th = asc + desc + 60
+    stroke = Image.new("L", (tw, th)); ImageDraw.Draw(stroke).text((30, 30), text, font=f, fill=255, stroke_width=style.stroke, stroke_fill=255)
+    body = Image.new("L", (tw, th)); ImageDraw.Draw(body).text((30, 30), text, font=f, fill=255)
     s = np.asarray(stroke, np.float32) / 255; b = np.asarray(body, np.float32) / 255
     a = np.maximum(b, s * style.stroke_alpha)
+    if getattr(style, "shadow_alpha", 0) > 0:
+        import cv2 as _cv
+        sh = _cv.GaussianBlur(s, (0, 0), style.shadow_blur) * style.shadow_alpha
+        a = np.maximum(a, np.clip(sh * 1.6, 0, style.shadow_alpha))
     col = np.array(hexa(style.fill)[:3], np.float32) / 255
     rgb = np.where(b[..., None] > 0, col, 0) * b[..., None] / np.maximum(a[..., None], 1e-4)
-    return np.concatenate([rgb, a[..., None]], 2).astype(np.float32), 10 + asc  # sprite, baseline offset in sprite
+    return np.concatenate([rgb, a[..., None]], 2).astype(np.float32), 30 + asc  # sprite, baseline offset in sprite
 
 
 def draw_caption(img, text, style=CaptionStyle):

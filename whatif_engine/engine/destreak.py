@@ -117,9 +117,12 @@ class CleanTiles:
                               for y in range(y0, y0 + B + 2)], 0)
         lat = float(unmerc(0, (by * B + B / 2) / n)[1])
         px_per_km = 256 * n / (40075.016686 * max(0.05, math.cos(math.radians(lat))))
-        clean = destreak(mos, lat, px_per_km)
-        if self.land is not None:
-            clean = self._remove_sea_ice(clean, z, x0, y0)
+        if z > 8:                                   # close-ups: no swath streaks here, just match the ocean colour
+            clean = self._recolor_ocean_hi(mos, z, x0, y0) if self.land is not None else mos
+        else:
+            clean = destreak(mos, lat, px_per_km)
+            if self.land is not None:
+                clean = self._remove_sea_ice(clean, z, x0, y0)
         for j in range(B):
             for i in range(B):
                 x, y = bx * B + i, by * B + j
@@ -155,6 +158,43 @@ class CleanTiles:
             m, sd = bm[water].mean(0), bm[water].std(0) + 1e-3
             self._bm = np.clip((bm - m) / sd * tgt_std + tgt_mean, 0, 255).astype(np.float32)
         return self._bm
+
+    def _recolor_ocean_hi(self, img, z, x0, y0):
+        """z>8: Natural Earth coasts are too coarse to cut along, so keep Sentinel texture (reefs, surf) and
+        colour-transfer water-like pixels outside land to the same open-ocean statistics as the overview zooms."""
+        from .geo import merc
+        N = 256 * (1 << z); H, W = img.shape[:2]
+        m = np.zeros((H, W), np.uint8); polys = []
+        for r in self._land_rings_for(z):
+            for sh in (-360, 0, 360):
+                x, y = merc(r[:, 0] + sh, r[:, 1])
+                px, py = x * N - x0 * 256, y * N - y0 * 256
+                if px.max() < -5 or px.min() > W + 5 or py.max() < -5 or py.min() > H + 5:
+                    continue
+                polys.append(np.round(np.stack([px, py], 1) * 16).astype(np.int32))
+        if polys:
+            cv2.fillPoly(m, polys, 255, lineType=cv2.LINE_AA, shift=4)
+        f = img.astype(np.float32); fb = cv2.GaussianBlur(f, (0, 0), 2.0); R, G, B = fb[..., 0], fb[..., 1], fb[..., 2]
+        wl = np.clip((B - R + 2) / 12, 0, 1) * np.clip((150 - fb.max(2)) / 35, 0, 1)    # water-like colour (not reef/surf/vegetation)
+        px_km = N / 40075.0
+        dist = cv2.distanceTransform((m < 128).astype(np.uint8), cv2.DIST_L2, 5)           # px to nearest NE land
+        far = np.clip((dist - 2.5 * px_km) / (1.0 * px_km), 0, 1)                          # >2.5 km offshore: open ocean only
+        water = cv2.GaussianBlur(np.maximum(wl, far), (0, 0), 1.5)
+        if water.max() < 0.01:
+            return img
+        from .geo import unmerc
+        if getattr(self, "_bm_s", None) is None:                                            # smooth ocean colour, no bathymetry blobs
+            self._bm_s = cv2.GaussianBlur(self._ocean_source(), (0, 0), 25)
+        bm = self._bm_s; BH, BW = bm.shape[:2]
+        xs = (np.arange(W) + x0 * 256 + 0.5) / N; ys = (np.arange(H) + y0 * 256 + 0.5) / N
+        lon, _ = unmerc(xs, np.zeros_like(xs)); _, lat = unmerc(np.zeros_like(ys), ys)
+        mx = ((np.asarray(lon) + 180) % 360) / 360 * BW; my = (90 - np.asarray(lat)) / 180 * BH
+        MX, MY = np.meshgrid(mx.astype(np.float32), my.astype(np.float32))
+        ocean = cv2.remap(bm, MX, MY, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        rng = np.random.default_rng(z * 1000003 + x0 * 7 + y0)
+        grain = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), 1.2)[..., None] * 1.6
+        out = f * (1 - water[..., None]) + (ocean + grain) * water[..., None]
+        return np.clip(out, 0, 255).astype(np.uint8)
 
     def _remove_sea_ice(self, img, z, x0, y0):
         """Replace every water pixel (outside Natural Earth land) with colour-matched Blue Marble ocean:

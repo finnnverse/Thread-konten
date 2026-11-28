@@ -129,7 +129,8 @@ class Engine:
         self.W, self.H = spec.get("size", [1080, 1920]); self.fps = spec.get("fps", 60)
         cache = os.path.join(ROOT, "cache")
         raw = TileSource(os.path.join(cache, "s2_2016"))
-        self.tiles = CleanTiles(raw, os.path.join(cache, "s2_clean"), land=Countries(os.path.join(ROOT, "data"), "50m"))
+        self.tiles = CleanTiles(raw, os.path.join(cache, "s2_clean"), land=Countries(os.path.join(ROOT, "data"), "50m"),
+                                max_clean_z=max(8, spec.get("max_zoom", 11)) if spec.get("hi_ocean") else 8)
         self.mr = MapRenderer(self.tiles, self.W, self.H, max_zoom=spec.get("max_zoom", 11))
         self.C = Countries(os.path.join(ROOT, "data"), "10m")
         # moving objects (tracked) first: camera may follow them

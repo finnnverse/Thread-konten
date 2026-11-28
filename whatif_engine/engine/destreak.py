@@ -129,17 +129,40 @@ class CleanTiles:
                     Image.fromarray(clean[(j + 1) * 256:(j + 2) * 256, (i + 1) * 256:(i + 2) * 256]).save(tmp, compress_level=1)
                     os.replace(tmp, p)                                   # atomic: readers never see half files
 
-    def _remove_sea_ice(self, img, z, x0, y0):
-        from .geo import merc
-        if self._land_rings is None:
+    # ------------------------------------------------------------------ ocean replacement
+    def _land_rings_for(self, z):
+        """50m coastlines for overview zooms, 10m for close-ups (accurate coasts)."""
+        key = "10m" if z >= 6 else "50m"
+        cache = getattr(self, "_rings_cache", {})
+        if key not in cache:
+            from .geo import Countries
+            src = self.land if key == "50m" else Countries(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"), "10m")
             rr = []
-            for f in self.land.features:
+            for f in src.features:
                 g = f["geometry"]; polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
                 rr += [np.asarray(p[0], float) for p in polys]
-            self._land_rings = rr
+            cache[key] = rr; self._rings_cache = cache
+        return cache[key]
+
+    def _ocean_source(self):
+        """NASA Blue Marble (public domain) ocean, colour-matched to Sentinel-2 open-ocean statistics."""
+        if getattr(self, "_bm", None) is None:
+            p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "nasa_bluemarble_5400.jpg")
+            bm = np.asarray(Image.open(p).convert("RGB")).astype(np.float32)
+            water = (bm[..., 2] > bm[..., 0] + 25) & (bm[..., 2] > bm[..., 1] + 10)
+            # target = Sentinel-2 2016 open ocean (measured median 20,37,61; spread from z3 tiles)
+            tgt_mean = np.array([19.0, 35.0, 60.0], np.float32); tgt_std = np.array([5.0, 8.0, 11.0], np.float32)
+            m, sd = bm[water].mean(0), bm[water].std(0) + 1e-3
+            self._bm = np.clip((bm - m) / sd * tgt_std + tgt_mean, 0, 255).astype(np.float32)
+        return self._bm
+
+    def _remove_sea_ice(self, img, z, x0, y0):
+        """Replace every water pixel (outside Natural Earth land) with colour-matched Blue Marble ocean:
+        removes Sentinel coastal-band seams, sea ice and cloud remnants over water in one step."""
+        from .geo import merc, unmerc
         N = 256 * (1 << z); H, W = img.shape[:2]
         m = np.zeros((H, W), np.uint8); polys = []
-        for r in self._land_rings:
+        for r in self._land_rings_for(z):
             for sh in (-360, 0, 360):
                 x, y = merc(r[:, 0] + sh, r[:, 1])
                 px, py = x * N - x0 * 256, y * N - y0 * 256
@@ -149,13 +172,18 @@ class CleanTiles:
         if polys:
             cv2.fillPoly(m, polys, 255, lineType=cv2.LINE_AA, shift=4)
         land = cv2.dilate(m, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))).astype(np.float32) / 255
-        f = img.astype(np.float32)
-        bright = np.clip((f.mean(2) - 45) / 35.0, 0, 1) * np.clip((f.max(2) - f.min(2) - 0) / 1.0, 1, 1)
-        ice = cv2.GaussianBlur(bright * (1 - land), (0, 0), 2.0)
-        ocean = np.array([20, 37, 61], np.float32)                     # S2 open-ocean median
-        rng = np.random.default_rng(z * 1000003 + x0 * 7 + y0)
-        tex = ocean[None, None] * (1 + 0.04 * cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), 6)[..., None] * 8)
-        out = f * (1 - ice[..., None]) + tex * ice[..., None]
+        water = cv2.GaussianBlur(1 - land, (0, 0), 1.2)
+        if water.max() < 0.01:
+            return img
+        bm = self._ocean_source(); BH, BW = bm.shape[:2]
+        xs = (np.arange(W) + x0 * 256 + 0.5) / N; ys = (np.arange(H) + y0 * 256 + 0.5) / N
+        lon, _ = unmerc(xs, np.zeros_like(xs)); _, lat = unmerc(np.zeros_like(ys), ys)
+        mx = ((np.asarray(lon) + 180) % 360) / 360 * BW; my = (90 - np.asarray(lat)) / 180 * BH
+        MX, MY = np.meshgrid(mx.astype(np.float32), my.astype(np.float32))
+        ocean = cv2.remap(bm, MX, MY, cv2.INTER_CUBIC, borderMode=cv2.BORDER_WRAP)
+        rng = np.random.default_rng(z * 1000003 + x0 * 7 + y0)               # fine grain so upscaled ocean is not plastic
+        grain = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), 1.2)[..., None] * 1.6
+        out = img.astype(np.float32) * (1 - water[..., None]) + (ocean + grain) * water[..., None]
         return np.clip(out, 0, 255).astype(np.uint8)
 
     def get(self, z, x, y):

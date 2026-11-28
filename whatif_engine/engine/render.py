@@ -48,6 +48,11 @@ def build_jfx(items, countries):
     Any value {"geom": "RUS"} / {"geom": ["MEX","USA"]} / {"geom": "USA", "exclude_bbox": [...]} becomes
     Natural Earth lon/lat rings; lists like [lon, lat] stay as tuples."""
     def res(v):
+        if isinstance(v, dict) and "lake" in v:
+            if not hasattr(build_jfx, "_lakes"):
+                build_jfx._lakes = Countries(os.path.join(ROOT, "data"), "10m", "lakes")
+            names = v["lake"] if isinstance(v["lake"], list) else [v["lake"]]
+            return [list(zip(r["lon"].tolist(), r["lat"].tolist())) for n in names for r in build_jfx._lakes.rings(n) if not r["hole"]]
         if isinstance(v, dict) and "geom" in v:
             codes = v["geom"] if isinstance(v["geom"], list) else [v["geom"]]
             out = []
@@ -125,7 +130,7 @@ class Engine:
         cache = os.path.join(ROOT, "cache")
         raw = TileSource(os.path.join(cache, "s2_2016"))
         self.tiles = CleanTiles(raw, os.path.join(cache, "s2_clean"), land=Countries(os.path.join(ROOT, "data"), "50m"))
-        self.mr = MapRenderer(self.tiles, self.W, self.H)
+        self.mr = MapRenderer(self.tiles, self.W, self.H, max_zoom=spec.get("max_zoom", 11))
         self.C = Countries(os.path.join(ROOT, "data"), "10m")
         # moving objects (tracked) first: camera may follow them
         self.tracked = {}

@@ -27,8 +27,9 @@ def width_km_to_norm(width_km, lat):
 class Countries:
     """Natural Earth admin-0. Lookup by ISO_A3 / ADM0_A3 / NAME (case-insensitive)."""
 
-    def __init__(self, data_dir, res="10m"):
-        p = os.path.join(data_dir, f"ne_{res}_admin_0_countries.geojson")
+    def __init__(self, data_dir, res="10m", layer="admin_0_countries"):
+        """layer: 'admin_0_countries' (default) or 'lakes' (ne_10m_lakes.geojson, lookup by `name`)."""
+        p = os.path.join(data_dir, f"ne_{res}_{layer}.geojson")
         self.features = json.load(open(p))["features"]
         self._cache = {}
 
@@ -36,7 +37,7 @@ class Countries:
         k = key.lower()
         for f in self.features:
             pr = f["properties"]
-            for fld in ("ADM0_A3", "ISO_A3", "NAME", "NAME_LONG", "ADMIN", "NAME_EN"):
+            for fld in ("ADM0_A3", "ISO_A3", "NAME", "NAME_LONG", "ADMIN", "NAME_EN", "name", "name_alt"):
                 v = pr.get(fld)
                 if isinstance(v, str) and v.lower() == k:
                     return f

@@ -48,8 +48,9 @@ spec = {
     {"t": W("around", 1, 0.2), "lon": -78.0, "lat": -6.0, "width_km": 13500, "roll": 0, "tilt": 12},
     {"t": W("and", 2), "lon": -79.8, "lat": 9.1, "width_km": 1000, "roll": -2, "tilt": 10},
     {"t": W("ever", off=0.1), "lon": -75.0, "lat": 12.0, "width_km": 2500, "roll": 1, "tilt": 10},
-    {"t": W("strait", off=0.5), "lon": -15.0, "lat": 34.0, "width_km": 20000, "roll": 0, "tilt": 11},
-    {"t": W("asia", off=0.5), "lon": -140.0, "lat": 22.0, "width_km": 25000, "roll": 1, "tilt": 12},
+    {"t": W("strait", off=0.5), "lon": -25.0, "lat": 38.0, "width_km": 19000, "roll": 0, "tilt": 11},
+    {"t": W("asia", off=0.3), "lon": -150.0, "lat": 33.0, "width_km": 21000, "roll": 1, "tilt": 11},
+    {"t": W("gas", off=0.4), "lon": -155.0, "lat": 33.0, "width_km": 21000, "roll": 2, "tilt": 11},
     {"t": W("tankers", off=0.0), "lon": -95.0, "lat": 16.0, "width_km": 8000, "roll": -2, "tilt": 11},
     {"t": W("panama", 2, 0.2), "lon": -80.5, "lat": 10.5, "width_km": 1800, "roll": -4, "tilt": 10},
     {"t": W("canal's"), "lon": -79.75, "lat": 9.1, "width_km": 320, "roll": -6, "tilt": 9},
@@ -94,7 +95,7 @@ spec = {
      "t0": W("all") - 0.1, "dur": 0.9, "icon": 0, "w": 7, "col": "#9eeb25", "t1": W("and", 2) + 0.3},
     {"fx": "LeaderLabel", "args": ["CAPE HORN", -67.3, -56.2], "t0": W("america"), "t1": W("and", 2) + 0.3, "h": 140, "size": 34},
     # best year ever
-    {"fx": "BigLabel", "args": ["BEST YEAR EVER", -79.75, 10.3], "t0": W("best"), "t1": W("when") - 0.1, "angle": -8, "size": 120, "col": "#ffd84a"},
+    {"fx": "BigLabel", "args": ["BEST YEAR EVER", -76.0, 11.5], "t0": W("best"), "t1": W("when") - 0.1, "angle": -8, "size": 120, "col": "#ffd84a"},
     # Hormuz choked -> US energy to Asia
     {"fx": "Cross", "args": [56.4, 26.5], "t0": W("choked"), "t1": W("asia", off=0.6), "size": 110},
     {"fx": "LeaderLabel", "args": ["HORMUZ", 56.4, 26.5], "t0": W("hormuz"), "t1": W("asia", off=0.6), "h": 170, "size": 34},
@@ -102,7 +103,7 @@ spec = {
           [-175, 31], [-200, 34], [-220.2, 35.4]], W("started"), 3.6, col="#ffd84a", icon=50),
     ship([[-94.0, 29.2], [-88, 24.5], [-85, 21.5], [-80.5, 14], [-79.92, 9.39], [-79.55, 8.88], [-90, 8], [-120, 12], [-150, 20],
           [-180, 25], [-238.5, 31.2]], W("buying"), 3.8, col="#ffd84a", icon=50),
-    {"fx": "Chip", "args": ["US OIL & GAS → ASIA"], "t0": W("american"), "t1": W("those") - 0.1, "lonlat": [-125, 28], "dy": -120, "size": 42},
+    {"fx": "Chip", "args": ["US OIL & GAS → ASIA"], "t0": W("american"), "t1": W("gas", off=0.5), "lonlat": [-150, 30], "dy": -120, "size": 42},
     # squeezed through Panama + record revenue
     ship(CANAL, W("squeezed") - 0.3, 3.2, col="#ffd84a", icon=50),
     ship(CANAL_REV, W("squeezed"), 3.2, col="#ffd84a", icon=50),
@@ -110,7 +111,7 @@ spec = {
     {"fx": "Chip", "args": ["RECORD REVENUE · FISCAL 2026"], "t0": W("billion") , "t1": W("but") - 0.1, "lonlat": [-79.7, 8.8], "dy": 60, "size": 36},
     # runs on rain, not fuel
     {"fx": "BigLabel", "args": ["FUEL", -79.75, 9.3], "t0": W("fuel") - 0.1, "t1": W("it", 2) + 0.4, "angle": -8, "size": 130},
-    {"fx": "Cross", "args": [-79.62, 9.27], "t0": W("fuel") + 0.15, "t1": W("it", 2) + 0.4, "size": 110},
+    {"fx": "Cross", "args": [-79.35, 9.33], "t0": W("fuel") + 0.15, "t1": W("it", 2) + 0.4, "size": 110},
     {"fx": "BigLabel", "args": ["RAIN", -79.8, 9.32], "t0": W("rain", 1) - 0.05, "t1": W("every") - 0.1, "angle": -8, "size": 150, "col": "#7ff3ff"},
     {"fx": "Snow", "args": [W("rain", 1) - 0.1, W("every") + 0.3], "n": 90},
     # 50 million gallons from Gatun Lake

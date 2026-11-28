@@ -12,7 +12,7 @@ SR = 48000
 
 
 def _adsr(n, a, r):
-    e = np.ones(n, np.float32); A = max(1, int(a * SR)); R = max(1, int(r * SR))
+    e = np.ones(n, np.float32); A = min(n, max(1, int(a * SR))); R = min(n, max(1, int(r * SR)))   # short tail-segments safe
     e[:A] = np.linspace(0, 1, A); e[-R:] *= np.linspace(1, 0, R); return e
 
 

@@ -123,8 +123,8 @@ jfx = [
     {"fx": "Check", "args": [C[0], C[1]], "t0": W("mines"), "t1": W("prices") - 0.1, "geo": True, "size": 160},
     {"fx": "BigLabel", "args": ["PRICES BOOM", C[0], C[1] - 0.045], "t0": W("prices") - 0.05, "t1": W("by", 2) - 0.1, "angle": -8, "size": 120, "col": GOLD},
     # $50,000 per person, second only to Saudi Arabia
-    {"fx": "BigLabel", "args": ["$50,000", C[0], C[1] + 0.045], "t0": W("50,000") - 0.05, "t1": W("second") + 0.2, "angle": -8, "size": 150, "col": GOLD},
-    {"fx": "Chip", "args": ["PER PERSON · PER YEAR"], "t0": W("dollars", 1), "t1": W("second") + 0.2, "lonlat": [C[0], C[1] + 0.045], "dy": 115, "size": 40},
+    {"fx": "BigLabel", "args": ["$50,000", C[0], C[1] + 0.045], "t0": W("50,000") - 0.05, "t1": W("second") - 0.15, "angle": -8, "size": 150, "col": GOLD},
+    {"fx": "Chip", "args": ["PER PERSON · PER YEAR"], "t0": W("dollars", 1), "t1": W("second") - 0.15, "lonlat": [C[0], C[1] + 0.045], "dy": 115, "size": 40},
     {"fx": "Chip", "args": ["MID-1970s"], "t0": W("1970s") - 0.05, "t1": W("50,000"), "xy": [540, 560], "size": 44},
     {"fx": "HL", "args": [{"geom": "SAU"}], "t0": W("saudi") - 0.1, "t1": W("but", 1) + 0.6, "col": "gold", "alpha": 0.9},
     {"fx": "Chip", "args": ["#1 SAUDI ARABIA"], "t0": W("saudi"), "t1": W("but", 1) + 0.5, "xy": [540, 560], "size": 44},
@@ -141,7 +141,7 @@ jfx = [
     {"fx": "Chip", "args": ["TRUST FUND"], "t0": W("trust") - 0.05, "t1": W("burned") + 0.3, "lonlat": [C[0], C[1] + 0.045], "dy": 120, "size": 44},
     {"fx": "Pin", "args": [-0.12, 51.5], "t0": W("london") - 0.1, "t1": W("by", 3)},
     {"fx": "LeaderLabel", "args": ["LONDON", -0.12, 51.5], "t0": W("london"), "t1": W("by", 3), "h": 170, "dx": 130, "size": 44},
-    {"fx": "BigLabel", "args": ["LEONARDO", -1.5, 55.0], "t0": W("leonardo") - 0.05, "t1": W("by", 3), "angle": -8, "size": 130, "col": GOLD},
+    {"fx": "BigLabel", "args": ["LEONARDO", 1.2, 54.6], "t0": W("leonardo") - 0.05, "t1": W("by", 3), "angle": -8, "size": 130, "col": GOLD},
     {"fx": "Chip", "args": ["FAILED MUSICAL"], "t0": W("failed") - 0.05, "t1": W("by", 3), "lonlat": [-0.12, 51.5], "dy": 120, "size": 42, "col": RED, "fg": "#ffffff"},
     # 2000: phosphate gone, fund empty
     {"fx": "Chip", "args": ["BY 2000"], "t0": W("2000") - 0.05, "t1": W("gone") + 0.3, "xy": [540, 560], "size": 48},

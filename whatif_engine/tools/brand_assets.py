@@ -90,19 +90,54 @@ def map_backdrop(W, H, lon_c=55, lat_c=28, width_km=19000):
     return np.asarray(pil.convert("RGB")).astype(np.float32) / 255
 
 
+def outlined_text(text, size, fill, stroke_px, glow_hex=None, family="jost", weight=800, tracking=0.04):
+    """Big legible text: dark outline + soft dark shadow + optional coloured glow (RGBA float)."""
+    f = font(family, size * 2, weight); asc, desc = f.getmetrics(); pad = int(size * 0.9)
+    xs, x = [], 0.0
+    for ch in text:
+        xs.append(x); x += f.getlength(ch) + tracking * size * 2
+    Wt, Ht = int(x + 2 * pad), asc + desc + 2 * pad
+    body = Image.new("L", (Wt, Ht)); strk = Image.new("L", (Wt, Ht))
+    for i, ch in enumerate(text):
+        ImageDraw.Draw(strk).text((pad + xs[i], pad), ch, font=f, fill=255, stroke_width=stroke_px * 2, stroke_fill=255)
+        ImageDraw.Draw(body).text((pad + xs[i], pad), ch, font=f, fill=255)
+    b = cv2.resize(np.asarray(body, np.float32) / 255, (Wt // 2, Ht // 2), interpolation=cv2.INTER_AREA)
+    st = cv2.resize(np.asarray(strk, np.float32) / 255, (Wt // 2, Ht // 2), interpolation=cv2.INTER_AREA)
+    shadow = cv2.GaussianBlur(st, (0, 0), size * 0.12) * 0.85
+    col = np.array([int(fill[i:i + 2], 16) for i in (1, 3, 5)], np.float32) / 255
+    rgb = np.zeros(b.shape + (3,), np.float32); a = np.maximum(shadow, st)
+    if glow_hex:
+        g = cv2.GaussianBlur(st, (0, 0), size * 0.18) * 0.9
+        gc = np.array([int(glow_hex[i:i + 2], 16) for i in (1, 3, 5)], np.float32) / 255
+        rgb += gc * (g * (1 - st))[..., None]; a = np.maximum(a, g)
+    rgb = rgb + np.array([0.02, 0.05, 0.07]) * (st * (1 - b))[..., None] + col * b[..., None]
+    a = np.clip(a, 0, 1)
+    rgb = rgb / np.maximum(a[..., None], 1e-4)
+    return np.concatenate([np.clip(rgb, 0, 1), a[..., None]], 2).astype(np.float32)
+
+
+def scrim(img, cx, cy, w, h, strength=0.72, blur=18):
+    """frosted dark band behind the title: blur the map there and darken it, soft edges."""
+    H_, W_ = img.shape[:2]
+    m = np.zeros((H_, W_), np.float32)
+    cv2.rectangle(m, (int(cx - w / 2), int(cy - h / 2)), (int(cx + w / 2), int(cy + h / 2)), 1.0, -1)
+    m = cv2.GaussianBlur(m, (0, 0), h * 0.22)[..., None]
+    bl = cv2.GaussianBlur(img, (0, 0), blur)
+    return img * (1 - m) + bl * (1 - strength) * m
+
+
 def title_block(img, cx, cy, scale):
-    t1 = static_glow_text(NAME.upper(), int(150 * scale), "#FFFFFF", family="jost", weight=800, tracking=0.06, glow="#06EBFF", s1=6 * scale, s2=26 * scale)
-    blit_sub(img, t1, cx, cy - 40 * scale)
-    t2 = static_glow_text(TAG, int(54 * scale), "#7FF3FF", family="jost", weight=500, tracking=0.02, s1=3, s2=10, a2=0.35)
-    blit_sub(img, t2, cx, cy + 95 * scale)
+    t1 = outlined_text(NAME.upper(), int(150 * scale), "#FFFFFF", max(4, int(7 * scale)), glow_hex="#06EBFF")
+    blit_sub(img, t1, cx, cy - 42 * scale)
+    t2 = outlined_text(TAG, int(62 * scale), "#FFDF0A", max(3, int(5 * scale)), family="jost", weight=700, tracking=0.01)
+    blit_sub(img, t2, cx, cy + 100 * scale)
 
 
 # YouTube banner 2560x1440, everything important inside central 1235x338 (strictest safe area)
 W, H = 2560, 1440
 yb = map_backdrop(W, H)
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-band = np.exp(-((yy - H / 2) / 260) ** 2)[..., None]                  # darken centre band for text contrast
-yb = yb * (1 - 0.55 * band)
+yb = scrim(yb, W / 2, H / 2 + 10, 1500, 430)
 title_block(yb, W / 2, H / 2, 0.86)
 save(yb, "youtube_banner_2560x1440.jpg")
 guide = (np.clip(yb, 0, 1) * 255).astype(np.uint8).copy()
@@ -114,7 +149,6 @@ Image.fromarray(guide).resize((1280, 720)).save(os.path.join(OUT, "cek_zona_aman
 W, H = 1702, 630
 fb = map_backdrop(W, H, lon_c=60, lat_c=30, width_km=17000)
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-band = np.exp(-((yy - H * 0.45) / 170) ** 2)[..., None]
-fb = fb * (1 - 0.55 * band)
+fb = scrim(fb, W * 0.56, H * 0.46, 1250, 360)
 title_block(fb, W * 0.56, H * 0.45, 0.8)
 save(fb, "facebook_cover_1702x630.jpg")

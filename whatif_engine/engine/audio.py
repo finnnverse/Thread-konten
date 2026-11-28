@@ -98,33 +98,44 @@ def shimmer(dur=0.6, rng=None):
 
 
 # ----------------------------------------------------------------------------- events from project
-def events_from_project(spec, cam=None):
-    ev = [("boom", 0.0, -6)]
-    for e in spec.get("elements", []):
-        ty = e["type"]
-        if ty == "trail":
-            ev.append(("whoosh", e["t0"] - 0.1, -11))
-        elif ty == "tracked":
-            ev.append(("whoosh", e["t0"] - 0.1, -9))
-        elif ty == "card":
-            ev.append(("alarm", e["t_in"] + 0.15, -13))
-        elif ty == "neon":
-            ev.append(("shimmer", e["t_in"], -16))
-        elif ty == "sticker" and e.get("t_in", -1) > 0:
-            ev.append(("pop", e["t_in"], -15))
-        elif ty == "hero":
-            ev.append(("whoosh", e["t_in"] - 0.2, -14))
-        elif ty == "rain":
-            ev.append(("whoosh", e["t0"], -12))
-    if cam is not None:                                       # whip moves: camera speed peaks
+def events_from_project(spec, cam=None, whoosh_gap=5.0, max_whoosh_per_min=6):
+    """SFX plan. Whoosh is reserved for the BIG moments only (largest camera whips / first launch),
+    spaced >= whoosh_gap s apart and capped per minute, so it never becomes a constant wind noise.
+    Other SFX are sparse accents."""
+    ev = [("boom", 0.0, -8)]
+    cand = []                                                  # (priority, t)
+    if cam is not None:                                        # camera whip strength
         ts = np.arange(cam.t0, cam.t1, 1 / 30); sp = []
         for t in ts:
             a, b = cam.state(t), cam.state(t + 1 / 30)
             sp.append(math.hypot(b["mx"] - a["mx"], b["my"] - a["my"]) / math.exp(a["logw"]) * 30 + abs(b["logw"] - a["logw"]) * 30)
-        sp = np.array(sp); last = -9
+        sp = np.array(sp)
         for i in range(1, len(sp) - 1):
-            if sp[i] > 1.6 and sp[i] >= sp[i - 1] and sp[i] >= sp[i + 1] and ts[i] - last > 1.0:
-                ev.append(("whoosh", float(ts[i] - 0.45), -12)); last = ts[i]
+            if sp[i] > 2.2 and sp[i] >= sp[i - 1] and sp[i] >= sp[i + 1]:
+                cand.append((float(sp[i]), float(ts[i] - 0.45)))
+    for e in spec.get("elements", []):
+        if e["type"] == "tracked":
+            cand.append((5.0, e["t0"] - 0.1))
+    cand.sort(reverse=True)
+    limit = max(1, int(round(max_whoosh_per_min * spec.get("duration", 60) / 60)))
+    chosen = []
+    for pr, t in cand:
+        if len(chosen) >= limit:
+            break
+        if all(abs(t - c) >= whoosh_gap for c in chosen):
+            chosen.append(t)
+    ev += [("whoosh", t, -16) for t in sorted(chosen)]
+    for e in spec.get("elements", []):
+        ty = e["type"]
+        if ty == "card":
+            ev.append(("alarm", e["t_in"] + 0.15, -16))
+        elif ty == "neon" and e.get("sfx", True):
+            ev.append(("shimmer", e["t_in"], -20))
+    # one soft pop per group of stickers appearing together (not one per sticker)
+    last = -9
+    for t in sorted(e["t_in"] for e in spec.get("elements", []) if e["type"] == "sticker" and e.get("t_in", -1) > 0):
+        if t - last > 1.5:
+            ev.append(("pop", t, -19)); last = t
     return ev
 
 
